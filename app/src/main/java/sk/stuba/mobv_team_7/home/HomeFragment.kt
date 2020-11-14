@@ -1,46 +1,54 @@
 package sk.stuba.mobv_team_7.home
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.Navigation
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.databinding.HomeFragmentBinding
-import sk.stuba.mobv_team_7.databinding.LoginFragmentBinding
 
 class HomeFragment : Fragment() {
 
     private lateinit var viewModel: HomeViewModel
 
+    private lateinit var binding: HomeFragmentBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = DataBindingUtil.inflate<HomeFragmentBinding>(
-            inflater, R.layout.home_fragment, container, false)
 
-        binding.home = this
-
-        //The complete onClickListener with Navigation using createNavigateOnClickListener
-        binding.profileButton.setOnClickListener(
-            Navigation.createNavigateOnClickListener(R.id.action_homeFragment_to_profileFragment)
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.home_fragment,
+            container,
+            false
         )
 
-        binding.videoButton.setOnClickListener(
-            Navigation.createNavigateOnClickListener(R.id.action_homeFragment_to_videoFragment)
-        )
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
+        binding.homeViewModel = viewModel
+        binding.lifecycleOwner = this
+
+
+        binding.videoButton.setOnClickListener{
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoFragment())
+        }
+
+        setHasOptionsMenu(true)
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.navbar_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToProfileFragment())
+        return true
     }
 
 }

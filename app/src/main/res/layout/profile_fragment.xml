@@ -7,17 +7,16 @@
          the whole ViewModel, so that we can access the LiveData,
          click handlers, and state variables. -->
     <data>
-
         <variable
-            name="profile"
-            type="sk.stuba.mobv_team_7.profile.ProfileFragment" />
+            name="profileViewModel"
+            type="sk.stuba.mobv_team_7.profile.ProfileViewModel" />
     </data>
+
     <!-- Start of the visible fragment layout using ConstraintLayout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".profile.ProfileFragment">
-
 
         <ImageView
             android:id="@+id/imageView"
@@ -33,7 +32,7 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="282dp"
+            android:layout_marginTop="50dp"
             android:text="ProfileScreen"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
