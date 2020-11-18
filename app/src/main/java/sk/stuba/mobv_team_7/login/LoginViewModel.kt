@@ -4,8 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel() : ViewModel() {
     // TODO: Implement the ViewModel
+//    private val _username = MutableLiveData<String>()
+//    val username: LiveData<String>
+//        get() = _username
+//
+//    private val _password = MutableLiveData<String>()
+//    val password: LiveData<String>
+//        get() = _password
+//
+//    init {
+//        _username.value = ""
+//        _password.value = ""
+//    }
 
     // The login finished event
     private val _eventLoginFinish = MutableLiveData<Boolean>()
@@ -19,7 +31,6 @@ class LoginViewModel : ViewModel() {
 
     /** Methods for buttons presses **/
     fun onLogin() {
-        //TODO Do the login
         _eventLoginFinish.value = true
     }
 
@@ -35,4 +46,5 @@ class LoginViewModel : ViewModel() {
     fun onRegisterComplete() {
         _eventRegisterFinish.value = false
     }
+
 }
