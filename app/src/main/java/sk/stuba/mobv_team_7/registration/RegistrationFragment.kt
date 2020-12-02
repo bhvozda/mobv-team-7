@@ -57,23 +57,25 @@ class RegistrationFragment : Fragment() {
 
                 val queue = Volley.newRequestQueue(this.context)
 
-                val jsonRoot = JSONObject()
-                jsonRoot.put("action", "register")
-                jsonRoot.put("apikey", API_KEY)
-                jsonRoot.put("email", email)
-                jsonRoot.put("username", username)
-                jsonRoot.put("password", password)
-
-                println(jsonRoot.toString())
+                // JSONObject
+                val jsonRootUserExists = JSONObject()
+                jsonRootUserExists.put("action", "exists")
+                jsonRootUserExists.put("apikey", API_KEY)
+                jsonRootUserExists.put("username", username)
 
                 val jsonRequest = JsonObjectRequest(
-                    URL, jsonRoot,
+                    URL, jsonRootUserExists,
                     Response.Listener { response ->
-                        registerSuccessful()
-                        println(response)
+                        val exists: Boolean = response.get("exists") as Boolean;
+                        if (!exists) {
+                            register(email, username, password)
+                        } else {
+                            Toast.makeText(activity, "User with this username already exists.", Toast.LENGTH_LONG).show()
+                        }
                     },
                     Response.ErrorListener {
-                        println("error")
+                        // TODO: crashanlytics
+                        Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
                     })
                 queue.add(jsonRequest)
 
@@ -84,12 +86,30 @@ class RegistrationFragment : Fragment() {
         return binding.root
     }
 
-    private fun registrationSuccessful() {
-        findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToHomeFragment())
-    }
-
     private fun registerSuccessful() {
         //TODO do something after register
         Toast.makeText(activity, "Registration done", Toast.LENGTH_LONG).show()
+        findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToHomeFragment())
+    }
+
+    private fun register(email: String, username: String, password: String) {
+        val jsonObject = JSONObject()
+        jsonObject.put("action", "register")
+        jsonObject.put("apikey", API_KEY)
+        jsonObject.put("email", email)
+        jsonObject.put("username", username)
+        jsonObject.put("password", password)
+
+        val queue = Volley.newRequestQueue(this.context)
+        val jsonRequest = JsonObjectRequest(
+            URL, jsonObject,
+            Response.Listener { response ->
+                registerSuccessful()
+            },
+            Response.ErrorListener {
+                // TODO: crashanlytics
+                Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
+            })
+        queue.add(jsonRequest)
     }
 }
