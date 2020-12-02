@@ -46,7 +46,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-
 class VideoFragment : Fragment() {
 
     /**
@@ -61,7 +60,6 @@ class VideoFragment : Fragment() {
     private lateinit var viewModel: VideoViewModel
 
     private lateinit var binding: VideoFragmentBinding
-
 
     /** Host's navigation controller */
     private val navController: NavController by lazy {
@@ -169,7 +167,6 @@ class VideoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.video_fragment,
@@ -182,15 +179,6 @@ class VideoFragment : Fragment() {
         binding.videoViewModel = viewModel
         binding.lifecycleOwner = this
 
-//        binding.captureButton.setOnClickListener {
-//            val REQUEST_VIDEO_CAPTURE = 1
-//
-//            val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-//            intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10)
-//            intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 8388608L)
-//            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE)
-//        }
-//
         return binding.root
     }
 
