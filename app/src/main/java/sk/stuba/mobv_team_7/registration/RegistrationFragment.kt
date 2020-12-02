@@ -1,4 +1,4 @@
-package sk.stuba.mobv_team_7.login
+package sk.stuba.mobv_team_7.registration
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,15 +18,14 @@ import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.constants.API_KEY
 import sk.stuba.mobv_team_7.constants.URL
 import sk.stuba.mobv_team_7.data.User
-import sk.stuba.mobv_team_7.databinding.LoginFragmentBinding
-import sk.stuba.mobv_team_7.home.HomeFragmentDirections
+import sk.stuba.mobv_team_7.databinding.RegistrationFragmentBinding
 
-class LoginFragment : Fragment() {
+class RegistrationFragment : Fragment() {
 
-    private lateinit var viewModel: LoginViewModel
+    private lateinit var viewModel: RegistrationViewModel
     private lateinit var user: User
 
-    private lateinit var binding: LoginFragmentBinding
+    private lateinit var binding: RegistrationFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,57 +34,62 @@ class LoginFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.login_fragment,
+            R.layout.registration_fragment,
             container,
             false
         )
 
         //TODO - to send arguments to other fragments use ViewModelFactory
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
 
-        binding.loginViewModel = viewModel
+        binding.registrationViewModel = viewModel
         binding.lifecycleOwner = this
 
         user = User()
         binding.user = user
 
-        viewModel.eventLoginFinish.observe(viewLifecycleOwner, Observer { loginFinished ->
-            if (loginFinished) {
-
-                val queue = Volley.newRequestQueue(this.context)
+        viewModel.eventRegisterFinish.observe(viewLifecycleOwner, Observer { registerFinished ->
+            if (registerFinished) {
 
                 val username = user.username
                 val password = user.password
+                val email = user.email
+
+                val queue = Volley.newRequestQueue(this.context)
 
                 val jsonRoot = JSONObject()
-                jsonRoot.put("action", "login")
+                jsonRoot.put("action", "register")
                 jsonRoot.put("apikey", API_KEY)
+                jsonRoot.put("email", email)
                 jsonRoot.put("username", username)
                 jsonRoot.put("password", password)
+
+                println(jsonRoot.toString())
 
                 val jsonRequest = JsonObjectRequest(
                     URL, jsonRoot,
                     Response.Listener { response ->
-                        loginSuccessful()
+                        registerSuccessful()
                         println(response)
                     },
                     Response.ErrorListener {
-                        println(it)
+                        println("error")
                     })
                 queue.add(jsonRequest)
 
-                viewModel.onLoginComplete()
+                viewModel.onRegisterComplete()
             }
         })
-
-        binding.registerButton.setOnClickListener{
-            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())
-        }
 
         return binding.root
     }
 
-    private fun loginSuccessful() {
-        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
+    private fun registrationSuccessful() {
+        findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToHomeFragment())
+    }
+
+    private fun registerSuccessful() {
+        //TODO do something after register
+        Toast.makeText(activity, "Registration done", Toast.LENGTH_LONG).show()
     }
 }

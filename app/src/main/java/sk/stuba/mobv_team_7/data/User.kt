@@ -21,4 +21,13 @@ class User : BaseObservable() {
             notifyPropertyChanged(BR.password)
         }
         get() = field
+
+    @Bindable
+    var email: String = String()
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.email)
+        }
+        get() = field
+
 }

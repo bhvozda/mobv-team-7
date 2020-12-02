@@ -1,15 +1,10 @@
-package sk.stuba.mobv_team_7.login
+package sk.stuba.mobv_team_7.registration
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class LoginViewModel() : ViewModel() {
-
-    // The login finished event
-    private val _eventLoginFinish = MutableLiveData<Boolean>()
-    val eventLoginFinish: LiveData<Boolean>
-        get() = _eventLoginFinish
+class RegistrationViewModel() : ViewModel() {
 
     // The register finished event
     private val _eventRegisterFinish = MutableLiveData<Boolean>()
@@ -17,17 +12,8 @@ class LoginViewModel() : ViewModel() {
         get() = _eventRegisterFinish
 
     /** Methods for buttons presses **/
-    fun onLogin() {
-        _eventLoginFinish.value = true
-    }
-
     fun onRegister() {
-        //TODO Do the registration
         _eventRegisterFinish.value = true
-    }
-
-    fun onLoginComplete() {
-        _eventLoginFinish.value = false
     }
 
     fun onRegisterComplete() {
