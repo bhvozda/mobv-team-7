@@ -5,4 +5,8 @@
     <string name="record_video">Record video</string>
     <string name="login_name">Login name</string>
     <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">E-mail</string>
+    <string name="username">Username</string>
+    <string name="empty_error">Field must not be empty</string>
 </resources>
