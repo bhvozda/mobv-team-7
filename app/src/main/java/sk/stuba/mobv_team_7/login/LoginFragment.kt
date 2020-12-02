@@ -63,16 +63,19 @@ class LoginFragment : Fragment() {
                 jsonRoot.put("username", username)
                 jsonRoot.put("password", password)
 
-                val jsonRequest = JsonObjectRequest(
-                    URL, jsonRoot,
-                    Response.Listener { response ->
-                        loginSuccessful()
-                        println(response)
-                    },
-                    Response.ErrorListener {
-                        println(it)
-                    })
-                queue.add(jsonRequest)
+                if (!isFormWithErrors(username, password)){
+                    val jsonRequest = JsonObjectRequest(
+                        URL, jsonRoot,
+                        Response.Listener { response ->
+                            loginSuccessful()
+                            println(response)
+                        },
+                        Response.ErrorListener {
+                            // TODO: crashanlytics
+                            Toast.makeText(activity, "Login not succesful.", Toast.LENGTH_LONG).show()
+                        })
+                    queue.add(jsonRequest)
+                }
 
                 viewModel.onLoginComplete()
             }
@@ -88,4 +91,21 @@ class LoginFragment : Fragment() {
     private fun loginSuccessful() {
         findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
     }
+
+    private fun isFormWithErrors(username: String, password: String): Boolean{
+        binding.editTextUsername.error = null
+        binding.editTextPassword.error = null
+        if (username.isNullOrEmpty() && password.isNullOrEmpty()){
+            binding.editTextUsername.error = resources.getString(R.string.empty_error)
+            binding.editTextPassword.error = resources.getString(R.string.empty_error)
+        }else if(username.isNullOrEmpty()){
+            binding.editTextUsername.error = resources.getString(R.string.empty_error)
+        }else if(password.isNullOrEmpty()){
+            binding.editTextPassword.error = resources.getString(R.string.empty_error)
+        }else{
+            return false
+        }
+        return true
+    }
+
 }

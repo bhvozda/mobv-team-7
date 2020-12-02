@@ -63,21 +63,23 @@ class RegistrationFragment : Fragment() {
                 jsonRootUserExists.put("apikey", API_KEY)
                 jsonRootUserExists.put("username", username)
 
-                val jsonRequest = JsonObjectRequest(
-                    URL, jsonRootUserExists,
-                    Response.Listener { response ->
-                        val exists: Boolean = response.get("exists") as Boolean;
-                        if (!exists) {
-                            register(email, username, password)
-                        } else {
-                            Toast.makeText(activity, "User with this username already exists.", Toast.LENGTH_LONG).show()
-                        }
-                    },
-                    Response.ErrorListener {
-                        // TODO: crashanlytics
-                        Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
-                    })
-                queue.add(jsonRequest)
+                if (!isFormWithErrors(email, username, password)){
+                    val jsonRequest = JsonObjectRequest(
+                        URL, jsonRootUserExists,
+                        Response.Listener { response ->
+                            val exists: Boolean = response.get("exists") as Boolean;
+                            if (!exists) {
+                                register(email, username, password)
+                            } else {
+                                Toast.makeText(activity, "User with this username already exists.", Toast.LENGTH_LONG).show()
+                            }
+                        },
+                        Response.ErrorListener {
+                            // TODO: crashanlytics
+                            Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
+                        })
+                    queue.add(jsonRequest)
+                }
 
                 viewModel.onRegisterComplete()
             }
@@ -89,7 +91,7 @@ class RegistrationFragment : Fragment() {
     private fun registerSuccessful() {
         //TODO do something after register
         Toast.makeText(activity, "Registration done", Toast.LENGTH_LONG).show()
-        findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToHomeFragment())
+        findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
     }
 
     private fun register(email: String, username: String, password: String) {
@@ -111,5 +113,34 @@ class RegistrationFragment : Fragment() {
                 Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
             })
         queue.add(jsonRequest)
+    }
+
+    private fun isFormWithErrors(email: String, username: String, password: String): Boolean{
+        binding.editTextUsername.error = null
+        binding.editTextPassword.error = null
+        binding.editTextEmail.error = null
+        if (username.isNullOrEmpty() && password.isNullOrEmpty() && email.isNullOrEmpty()){
+            binding.editTextUsername.error = resources.getString(R.string.empty_error)
+            binding.editTextPassword.error = resources.getString(R.string.empty_error)
+            binding.editTextEmail.error = resources.getString(R.string.empty_error)
+        }else if(username.isNullOrEmpty() && password.isNullOrEmpty()){
+            binding.editTextUsername.error = resources.getString(R.string.empty_error)
+            binding.editTextPassword.error = resources.getString(R.string.empty_error)
+        }else if(username.isNullOrEmpty() && email.isNullOrEmpty()){
+            binding.editTextUsername.error = resources.getString(R.string.empty_error)
+            binding.editTextEmail.error = resources.getString(R.string.empty_error)
+        }else if(password.isNullOrEmpty() && email.isNullOrEmpty()){
+            binding.editTextPassword.error = resources.getString(R.string.empty_error)
+            binding.editTextEmail.error = resources.getString(R.string.empty_error)
+        }else if(username.isNullOrEmpty()){
+            binding.editTextEmail.error = resources.getString(R.string.empty_error)
+        }else if(password.isNullOrEmpty()){
+            binding.editTextPassword.error = resources.getString(R.string.empty_error)
+        }else if(email.isNullOrEmpty()){
+            binding.editTextEmail.error = resources.getString(R.string.empty_error)
+        }else{
+            return false
+        }
+        return true
     }
 }
