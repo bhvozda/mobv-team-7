@@ -4,4 +4,5 @@
     <string name="login">Login</string>
     <string name="profile">Profile</string>
     <string name="record_video">Record video</string>
+    <string name="show_video">Show video</string>
 </resources>

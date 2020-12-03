@@ -37,6 +37,10 @@ class HomeFragment : Fragment() {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoFragment())
         }
 
+        binding.videoPlayerButton.setOnClickListener{
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
+        }
+
         setHasOptionsMenu(true)
         return binding.root
     }
