@@ -19,10 +19,12 @@ import sk.stuba.mobv_team_7.constants.API_KEY
 import sk.stuba.mobv_team_7.constants.URL
 import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.RegistrationFragmentBinding
+import sk.stuba.mobv_team_7.shared.SharedViewModel
 
 class RegistrationFragment : Fragment() {
 
     private lateinit var viewModel: RegistrationViewModel
+    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var user: User
 
     private lateinit var binding: RegistrationFragmentBinding
@@ -41,6 +43,7 @@ class RegistrationFragment : Fragment() {
 
         //TODO - to send arguments to other fragments use ViewModelFactory
         viewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         binding.registrationViewModel = viewModel
         binding.lifecycleOwner = this
@@ -63,7 +66,7 @@ class RegistrationFragment : Fragment() {
                 jsonRootUserExists.put("apikey", API_KEY)
                 jsonRootUserExists.put("username", username)
 
-                if (!isFormWithErrors(email, username, password)){
+                if (!isFormWithErrors(email, username, password)) {
                     val jsonRequest = JsonObjectRequest(
                         URL, jsonRootUserExists,
                         Response.Listener { response ->
@@ -71,12 +74,20 @@ class RegistrationFragment : Fragment() {
                             if (!exists) {
                                 register(email, username, password)
                             } else {
-                                Toast.makeText(activity, "User with this username already exists.", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    activity,
+                                    "User with this username already exists.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         },
                         Response.ErrorListener {
                             // TODO: crashanlytics
-                            Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                activity,
+                                "Unexpected error occurred.",
+                                Toast.LENGTH_LONG
+                            ).show()
                         })
                     queue.add(jsonRequest)
                 }
@@ -89,8 +100,8 @@ class RegistrationFragment : Fragment() {
     }
 
     private fun registerSuccessful() {
-        //TODO do something after register
         Toast.makeText(activity, "Registration done", Toast.LENGTH_LONG).show()
+        sharedViewModel.onRegistrationSuccessful(user)
         findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
     }
 
@@ -106,6 +117,8 @@ class RegistrationFragment : Fragment() {
         val jsonRequest = JsonObjectRequest(
             URL, jsonObject,
             Response.Listener { response ->
+                user.refreshToken = response.get("refresh").toString()
+                user.token = response.get("token").toString()
                 registerSuccessful()
             },
             Response.ErrorListener {
@@ -115,32 +128,25 @@ class RegistrationFragment : Fragment() {
         queue.add(jsonRequest)
     }
 
-    private fun isFormWithErrors(email: String, username: String, password: String): Boolean{
+    private fun isFormWithErrors(email: String, username: String, password: String): Boolean {
         binding.editTextUsername.error = null
         binding.editTextPassword.error = null
         binding.editTextEmail.error = null
-        if (username.isNullOrEmpty() && password.isNullOrEmpty() && email.isNullOrEmpty()){
+
+        var errorFlag = false
+        if (username.isEmpty()) {
             binding.editTextUsername.error = resources.getString(R.string.empty_error)
-            binding.editTextPassword.error = resources.getString(R.string.empty_error)
-            binding.editTextEmail.error = resources.getString(R.string.empty_error)
-        }else if(username.isNullOrEmpty() && password.isNullOrEmpty()){
-            binding.editTextUsername.error = resources.getString(R.string.empty_error)
-            binding.editTextPassword.error = resources.getString(R.string.empty_error)
-        }else if(username.isNullOrEmpty() && email.isNullOrEmpty()){
-            binding.editTextUsername.error = resources.getString(R.string.empty_error)
-            binding.editTextEmail.error = resources.getString(R.string.empty_error)
-        }else if(password.isNullOrEmpty() && email.isNullOrEmpty()){
-            binding.editTextPassword.error = resources.getString(R.string.empty_error)
-            binding.editTextEmail.error = resources.getString(R.string.empty_error)
-        }else if(username.isNullOrEmpty()){
-            binding.editTextEmail.error = resources.getString(R.string.empty_error)
-        }else if(password.isNullOrEmpty()){
-            binding.editTextPassword.error = resources.getString(R.string.empty_error)
-        }else if(email.isNullOrEmpty()){
-            binding.editTextEmail.error = resources.getString(R.string.empty_error)
-        }else{
-            return false
+            errorFlag = true
         }
-        return true
+        if (password.isEmpty()) {
+            binding.editTextPassword.error = resources.getString(R.string.empty_error)
+            errorFlag = true
+        }
+        if (email.isEmpty()) {
+            binding.editTextEmail.error = resources.getString(R.string.empty_error)
+            errorFlag = true
+        }
+        return errorFlag
+
     }
 }

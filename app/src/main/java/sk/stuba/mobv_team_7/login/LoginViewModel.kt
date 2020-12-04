@@ -11,27 +11,13 @@ class LoginViewModel() : ViewModel() {
     val eventLoginFinish: LiveData<Boolean>
         get() = _eventLoginFinish
 
-    // The register finished event
-    private val _eventRegisterFinish = MutableLiveData<Boolean>()
-    val eventRegisterFinish: LiveData<Boolean>
-        get() = _eventRegisterFinish
-
     /** Methods for buttons presses **/
     fun onLogin() {
         _eventLoginFinish.value = true
     }
 
-    fun onRegister() {
-        //TODO Do the registration
-        _eventRegisterFinish.value = true
-    }
-
     fun onLoginComplete() {
         _eventLoginFinish.value = false
-    }
-
-    fun onRegisterComplete() {
-        _eventRegisterFinish.value = false
     }
 
 }

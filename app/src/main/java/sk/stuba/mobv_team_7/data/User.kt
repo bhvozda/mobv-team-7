@@ -30,4 +30,7 @@ class User : BaseObservable() {
         }
         get() = field
 
+    var refreshToken: String? = null
+    var token: String? = null
+
 }

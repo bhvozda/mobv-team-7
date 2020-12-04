@@ -20,10 +20,12 @@ import sk.stuba.mobv_team_7.constants.URL
 import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.LoginFragmentBinding
 import sk.stuba.mobv_team_7.home.HomeFragmentDirections
+import sk.stuba.mobv_team_7.shared.SharedViewModel
 
 class LoginFragment : Fragment() {
 
     private lateinit var viewModel: LoginViewModel
+    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var user: User
 
     private lateinit var binding: LoginFragmentBinding
@@ -42,6 +44,7 @@ class LoginFragment : Fragment() {
 
         //TODO - to send arguments to other fragments use ViewModelFactory
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         binding.loginViewModel = viewModel
         binding.lifecycleOwner = this
@@ -63,16 +66,19 @@ class LoginFragment : Fragment() {
                 jsonRoot.put("username", username)
                 jsonRoot.put("password", password)
 
-                if (!isFormWithErrors(username, password)){
+                if (!isFormWithErrors(username, password)) {
                     val jsonRequest = JsonObjectRequest(
                         URL, jsonRoot,
                         Response.Listener { response ->
+                            user.email = response.get("email").toString()
+                            user.refreshToken = response.get("refresh").toString()
+                            user.token = response.get("token").toString()
                             loginSuccessful()
-                            println(response)
                         },
                         Response.ErrorListener {
                             // TODO: crashanlytics
-                            Toast.makeText(activity, "Login not succesful.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(activity, "Login not succesful.", Toast.LENGTH_LONG)
+                                .show()
                         })
                     queue.add(jsonRequest)
                 }
@@ -81,7 +87,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        binding.registerButton.setOnClickListener{
+        binding.registerButton.setOnClickListener {
             findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())
         }
 
@@ -89,20 +95,21 @@ class LoginFragment : Fragment() {
     }
 
     private fun loginSuccessful() {
+        sharedViewModel.onLoginSuccessful(user)
         findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
     }
 
-    private fun isFormWithErrors(username: String, password: String): Boolean{
+    private fun isFormWithErrors(username: String, password: String): Boolean {
         binding.editTextUsername.error = null
         binding.editTextPassword.error = null
-        if (username.isNullOrEmpty() && password.isNullOrEmpty()){
+        if (username.isNullOrEmpty() && password.isNullOrEmpty()) {
             binding.editTextUsername.error = resources.getString(R.string.empty_error)
             binding.editTextPassword.error = resources.getString(R.string.empty_error)
-        }else if(username.isNullOrEmpty()){
+        } else if (username.isNullOrEmpty()) {
             binding.editTextUsername.error = resources.getString(R.string.empty_error)
-        }else if(password.isNullOrEmpty()){
+        } else if (password.isNullOrEmpty()) {
             binding.editTextPassword.error = resources.getString(R.string.empty_error)
-        }else{
+        } else {
             return false
         }
         return true
