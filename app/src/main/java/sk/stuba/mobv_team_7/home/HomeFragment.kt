@@ -32,9 +32,12 @@ class HomeFragment : Fragment() {
         binding.homeViewModel = viewModel
         binding.lifecycleOwner = this
 
-
         binding.videoButton.setOnClickListener{
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoFragment())
+        }
+
+        binding.videoPlayerButton.setOnClickListener{
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
         }
 
         setHasOptionsMenu(true)

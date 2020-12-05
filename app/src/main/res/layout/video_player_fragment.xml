@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Data to make available to the XML via data binding. In this case,
+         the whole ViewModel, so that we can access the LiveData,
+         click handlers, and state variables. -->
+    <data>
+        <variable
+            name="videoPlayerViewModel"
+            type="sk.stuba.mobv_team_7.videoplayer.VideoPlayerViewModel" />
+    </data>
+
+    <!-- Start of the visible fragment layout using RelativeLayout -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".videoplayer.VideoPlayerFragment">
+
+        <Button
+            android:id="@+id/videoPlayer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/record_video"
+            android:onClick="@{() -> videoPlayerViewModel.onPostOpen()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/simpleExoPlayerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+<!--        <com.google.android.exoplayer2.ui.PlayerView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:id="@+id/videoPlayer_playerView"-->
+<!--            app:resize_mode="fit"-->
+<!--            app:hide_on_touch="true"-->
+<!--            app:show_timeout="5000"-->
+<!--            app:rewind_increment="10000"-->
+<!--            app:fastforward_increment="10000"-->
+<!--            app:use_controller="true"-->
+<!--            android:background="@android:color/background_dark"-->
+<!--            app:player_layout_id="@layout/exo_simple_player_view"-->
+<!--            app:controller_layout_id="@layout/custom_controller"/>-->
+<!--        -->
+<!--        <ProgressBar-->
+<!--            android:layout_width="80dp"-->
+<!--            android:layout_height="80dp"-->
+<!--            android:id="@+id/videoPlayer_progress_bar"-->
+<!--            android:layout_centerInParent="true"/>-->
+
+    </RelativeLayout>
+</layout>
