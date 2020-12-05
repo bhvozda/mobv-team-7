@@ -22,7 +22,7 @@
             android:id="@+id/profilePicture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="profile picture"
+            android:contentDescription="@string/profile_picture"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
@@ -41,32 +41,30 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.148"
+            app:layout_constraintHorizontal_bias="0.158"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePicture"
-            app:layout_constraintVertical_bias="0.17" />
+            app:layout_constraintVertical_bias="0.129" />
+
 
         <ImageView
             android:id="@+id/emailIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="email icon"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="52dp"
+            android:contentDescription="email icon"
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@+id/name"
             app:srcCompat="@android:drawable/sym_action_email" />
 
-        <Button
+        <TextView
             android:id="@+id/sendEmail"
-            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="56dp"
             android:text=""
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="#000000"
             android:textSize="18sp"
             app:layout_constraintStart_toEndOf="@+id/emailIcon"
             app:layout_constraintTop_toBottomOf="@+id/name" />
@@ -78,8 +76,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
             android:text="Change password"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/emailIcon"
             app:layout_constraintTop_toBottomOf="@+id/sendEmail" />
@@ -90,8 +86,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Log out"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/emailIcon"
             app:layout_constraintTop_toBottomOf="@+id/changePassword" />

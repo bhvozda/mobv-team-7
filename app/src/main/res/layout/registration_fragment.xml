@@ -8,8 +8,8 @@
          click handlers, and state variables. -->
     <data>
         <variable
-            name="loginViewModel"
-            type="sk.stuba.mobv_team_7.login.LoginViewModel" />
+            name="registrationViewModel"
+            type="sk.stuba.mobv_team_7.registration.RegistrationViewModel" />
         <variable
             name="user"
             type="sk.stuba.mobv_team_7.data.User" />
@@ -19,16 +19,16 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".login.LoginFragment">
+        tools:context=".registration.RegistrationFragment">
 
         <TextView
-            android:id="@+id/loginHeader"
+            android:id="@+id/registerHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="70dp"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/login"
+            android:text="@string/register"
             android:textSize="25sp"
             app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,10 +43,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:hint="@string/username"
-            app:layout_constraintBottom_toTopOf="@+id/editTextPassword"
+            app:layout_constraintBottom_toTopOf="@+id/editTextEmail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginHeader">
+            app:layout_constraintTop_toBottomOf="@+id/registerHeader">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -58,19 +58,38 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="15dp"
+            android:hint="@string/email"
+            app:layout_constraintBottom_toTopOf="@+id/editTextPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextUsername">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="15"
+                android:inputType="textEmailAddress"
+                android:text="@={user.email}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextPassword"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="80dp"
+            android:gravity="center"
             android:hint="@string/password"
             app:endIconMode="password_toggle"
-            app:layout_constraintBottom_toTopOf="@+id/login_button"
+            app:layout_constraintBottom_toTopOf="@+id/next_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextUsername">
+            app:layout_constraintTop_toBottomOf="@+id/editTextEmail">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -82,28 +101,16 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/next_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:onClick="@{() -> loginViewModel.onLogin()}"
-            android:text="@string/login"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/register_button"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/register_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:onClick="@{() -> registrationViewModel.onRegister()}"
             android:text="@string/register"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/login_button" />
-
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
