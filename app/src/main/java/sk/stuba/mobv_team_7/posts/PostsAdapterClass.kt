@@ -6,12 +6,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_post.view.*
 import sk.stuba.mobv_team_7.R
+import sk.stuba.mobv_team_7.home.PostDto
 
 class PostsAdapter(
-    var posts: List<Post>
+    var posts: List<PostDto>,
+    val listener: (PostDto) -> Unit
 ) : RecyclerView.Adapter<PostsAdapter.ItemPostViewHolder>() {
 
-    inner class ItemPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class ItemPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        init {
+            itemView.setOnClickListener {
+                listener(posts[adapterPosition])
+            }
+        }
+    }
 
     // called when the recyclerview needs a new view holder
     // for example: if user scrolls and another item rise recycled and it needs to create
@@ -29,8 +37,9 @@ class PostsAdapter(
     // binds data to our items (posts); data to view
     override fun onBindViewHolder(holder: ItemPostViewHolder, position: Int) {
         holder.itemView.apply {
-            title.text = posts[position].title
-            description.text = posts[position].description
+            title.text = posts[position].username
+            description.text = posts[position].createdAt.toString()
         }
     }
+
 }

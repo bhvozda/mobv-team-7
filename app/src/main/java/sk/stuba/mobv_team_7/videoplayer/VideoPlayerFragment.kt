@@ -33,10 +33,14 @@ import kotlinx.android.synthetic.main.video_player_fragment.*
 import sk.stuba.mobv_team_7.MainActivity
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.databinding.VideoPlayerFragmentBinding
+import sk.stuba.mobv_team_7.home.HomeViewModel
+import sk.stuba.mobv_team_7.http.VIEW_POST_URL
+import sk.stuba.mobv_team_7.shared.SharedViewModel
 
 class VideoPlayerFragment: Fragment() {
 
     private lateinit var viewModel: VideoPlayerViewModel
+    private lateinit var sharedViewModel: SharedViewModel
 
     private lateinit var binding: VideoPlayerFragmentBinding
 
@@ -58,6 +62,7 @@ class VideoPlayerFragment: Fragment() {
         )
 
         viewModel = ViewModelProvider(this).get(VideoPlayerViewModel::class.java)
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         binding.videoPlayerViewModel = viewModel
         binding.lifecycleOwner = this
@@ -70,9 +75,10 @@ class VideoPlayerFragment: Fragment() {
         })
 
         exoplayerView = binding.simpleExoPlayerView
-        val videoUrl = "https://i.imgur.com/7bMqysJ.mp4"
-        initializePlayer(videoUrl)
 
+        sharedViewModel.eventPostChoice.observe(viewLifecycleOwner, Observer { post ->
+            initializePlayer(VIEW_POST_URL + post.videoUrl)
+        })
         return binding.root
     }
 
