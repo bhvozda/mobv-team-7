@@ -1,7 +1,12 @@
 <resources>
     <string name="app_name">mobv-team-7</string>
     <string name="register">Register</string>
-    <string name="login">Login</string>
     <string name="profile">Profile</string>
     <string name="record_video">Record video</string>
+    <string name="login_name">Login name</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">E-mail</string>
+    <string name="username">Username</string>
+    <string name="empty_error">Field must not be empty</string>
 </resources>
