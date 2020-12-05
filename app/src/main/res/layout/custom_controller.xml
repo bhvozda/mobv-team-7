@@ -72,12 +72,6 @@
                 android:id="@+id/exo_duration"
                 android:textColor="#CBCDC8"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bt_fullscreen"
-                android:src="@drawable/ic_fullscreen"/>
-
         </LinearLayout>
 
         <com.google.android.exoplayer2.ui.DefaultTimeBar
