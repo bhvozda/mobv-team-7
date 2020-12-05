@@ -13,20 +13,10 @@
     </data>
 
     <!-- Start of the visible fragment layout using RelativeLayout -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".videoplayer.VideoPlayerFragment">
-
-        <TextView
-            android:id="@+id/videoPlayer_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="VideoPlayerScreen"
-            app:layout_constraintBottom_toTopOf="@+id/videoPlayer_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/videoPlayer_button"
@@ -38,5 +28,30 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/simpleExoPlayerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+<!--        <com.google.android.exoplayer2.ui.PlayerView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:id="@+id/videoPlayer_playerView"-->
+<!--            app:resize_mode="fit"-->
+<!--            app:hide_on_touch="true"-->
+<!--            app:show_timeout="5000"-->
+<!--            app:rewind_increment="10000"-->
+<!--            app:fastforward_increment="10000"-->
+<!--            app:use_controller="true"-->
+<!--            android:background="@android:color/background_dark"-->
+<!--            app:player_layout_id="@layout/exo_simple_player_view"-->
+<!--            app:controller_layout_id="@layout/custom_controller"/>-->
+<!--        -->
+<!--        <ProgressBar-->
+<!--            android:layout_width="80dp"-->
+<!--            android:layout_height="80dp"-->
+<!--            android:id="@+id/videoPlayer_progress_bar"-->
+<!--            android:layout_centerInParent="true"/>-->
+
+    </RelativeLayout>
 </layout>

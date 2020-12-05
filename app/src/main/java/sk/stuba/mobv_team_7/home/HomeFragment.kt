@@ -32,7 +32,6 @@ class HomeFragment : Fragment() {
         binding.homeViewModel = viewModel
         binding.lifecycleOwner = this
 
-
         binding.videoButton.setOnClickListener{
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoFragment())
         }
