@@ -40,6 +40,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
 import sk.stuba.mobv_team_7.BuildConfig
 import sk.stuba.mobv_team_7.R
+import sk.stuba.mobv_team_7.api.PostRequest
 import sk.stuba.mobv_team_7.constants.API_KEY
 import sk.stuba.mobv_team_7.constants.URL
 import sk.stuba.mobv_team_7.constants.URL_POST
@@ -336,43 +337,18 @@ class VideoFragment : Fragment() {
 //                                Intent.FLAG_ACTIVITY_CLEAR_TOP
 //                    })
 
+                    val postRequest = PostRequest(API_KEY, token)
+
+                    viewModel.postNewPost(postRequest, outputFile)
+                    Log.d("TAG_TAG", "file saving")
+
                     // Finishes our current camera screen
                     delay(VideoFragment.ANIMATION_SLOW_MILLIS)
-
-                    postUpload(outputFile)
                 }
             }
 
             true
         }
-    }
-
-    private fun postUpload(data: File) {
-
-        val queue = Volley.newRequestQueue(this.context)
-
-
-        val jsonRoot = JSONObject()
-        jsonRoot.put("video", data)
-        jsonRoot.put("apikey", API_KEY)
-        jsonRoot.put("token", token)
-
-        val jsonRequest = JsonObjectRequest(
-            URL_POST, jsonRoot,
-            Response.Listener { response ->
-                Toast.makeText(activity, "Post created.", Toast.LENGTH_LONG)
-                    .show()
-                navController.popBackStack()
-            },
-            Response.ErrorListener {
-                // TODO: crashanlytics
-                print(it)
-                Toast.makeText(activity, "Post not succesful.", Toast.LENGTH_LONG)
-                    .show()
-
-                navController.popBackStack()
-            })
-        queue.add(jsonRequest)
     }
 
     /** Opens the camera and returns the opened device (as the result of the suspend coroutine) */
