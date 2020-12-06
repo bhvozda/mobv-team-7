@@ -19,6 +19,7 @@ import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.HomeFragmentBinding
 import sk.stuba.mobv_team_7.http.API_KEY
+import sk.stuba.mobv_team_7.http.DATE_FORMAT_RESPONSE
 import sk.stuba.mobv_team_7.http.JsonObjectRequestModified
 import sk.stuba.mobv_team_7.http.URL
 import sk.stuba.mobv_team_7.posts.PostsAdapter
@@ -26,8 +27,6 @@ import sk.stuba.mobv_team_7.shared.SharedViewModel
 import java.text.SimpleDateFormat
 
 class HomeFragment : Fragment() {
-
-    private val DATE_FORMAT = "YYYY-MM-dd HH:mm:ss"
 
     private lateinit var viewModel: HomeViewModel
     private lateinit var sharedViewModel: SharedViewModel
@@ -53,12 +52,15 @@ class HomeFragment : Fragment() {
         binding.homeViewModel = viewModel
         binding.lifecycleOwner = this
 
-        binding.videoButton.setOnClickListener{
+        binding.videoButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoFragment())
         }
 
         sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
             getAllPosts(user)
+            binding.swipeRefreshLayout.setOnRefreshListener {
+                getAllPosts(user)
+            }
         })
 
         setHasOptionsMenu(true)
@@ -77,18 +79,19 @@ class HomeFragment : Fragment() {
 
     private fun jsonToPostDto(jsonObject: JSONObject): PostDto {
         val postId = jsonObject.get("postid").toString()
-        val createdAt = SimpleDateFormat(DATE_FORMAT).parse(jsonObject.get("created").toString())
+        val createdAt = SimpleDateFormat(DATE_FORMAT_RESPONSE).parse(jsonObject.get("created").toString())
         val videoUrl = jsonObject.get("videourl").toString()
         val username = jsonObject.get("username").toString()
         val profile = jsonObject.get("profile").toString()
         return PostDto(postId, createdAt, videoUrl, username, profile)
     }
 
-    private fun putListInView(posts: List<PostDto>) {
+    private fun putPostsInView(posts: List<PostDto>) {
         val adapter = PostsAdapter(posts) { post ->
             sharedViewModel.onPostChoice(post)
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
         }
+
         postsRecycleView.adapter = adapter
         postsRecycleView.layoutManager = LinearLayoutManager(this.context)
     }
@@ -111,11 +114,13 @@ class HomeFragment : Fragment() {
                     val jsonPost = posts.get(i)
                     postsList.add(jsonToPostDto(jsonPost as JSONObject))
                 }
-                putListInView(postsList)
+                putPostsInView(postsList)
+                binding.swipeRefreshLayout.isRefreshing = false
             },
             Response.ErrorListener {
                 // TODO: crash analytics
                 Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
+                binding.swipeRefreshLayout.isRefreshing = false
             })
         queue.add(jsonRequest)
     }
