@@ -3,6 +3,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlin-kapt"
+apply plugin: "kotlin-kapt"
+apply plugin: 'com.google.gms.google-services'
+// Apply the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 30
@@ -72,4 +76,11 @@ dependencies {
 
     //refresh layout for new posts
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+    // Recommended: Add the Google Analytics SDK.
+    implementation 'com.google.firebase:firebase-analytics:18.0.0'
+    // Recommended: Add the Google Analytics SDK.
+    implementation 'com.google.firebase:firebase-analytics:18.0.0'
 }
