@@ -41,11 +41,9 @@ import org.json.JSONObject
 import sk.stuba.mobv_team_7.BuildConfig
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.api.PostRequest
-import sk.stuba.mobv_team_7.constants.API_KEY
-import sk.stuba.mobv_team_7.constants.URL
-import sk.stuba.mobv_team_7.constants.URL_POST
 import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.VideoFragmentBinding
+import sk.stuba.mobv_team_7.http.API_KEY
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 import sk.stuba.mobv_team_7.utils.AutoFitSurfaceView
 import sk.stuba.mobv_team_7.utils.OrientationLiveData

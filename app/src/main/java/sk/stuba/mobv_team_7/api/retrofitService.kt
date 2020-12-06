@@ -6,9 +6,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
-
-private const val BASE_URL = "https://api.github.com/"
-//"https://api.github.com/users/Xsimekj1"
 private const val URL = "http://api.mcomputing.eu/"
 
 private val retrofit = Retrofit.Builder()
@@ -17,10 +14,6 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface GithubApiService {
-    @GET("/users/{profile}")
-    fun getUserData(@Path("profile") profile: String):
-            Call<GithubUser>
-
     @Headers("Content-Type: application/json")
     @POST("/mobv/service.php")
     fun getUserInfo(@Body body: UserInfoRequest):
@@ -31,8 +24,14 @@ interface GithubApiService {
     fun postPost(
         @Part video: MultipartBody.Part?,
         @Part data: MultipartBody.Part?
-    ):
-            Call<PostResponse>
+    ): Call<PostResponse>
+
+    @Multipart
+    @POST("/mobv/upload.php")
+    fun photoUpdate(
+        @Part image: MultipartBody.Part?,
+        @Part data: MultipartBody.Part?
+    ): Call<PhotoUpdateResponse>
 }
 
 object GithubApi {

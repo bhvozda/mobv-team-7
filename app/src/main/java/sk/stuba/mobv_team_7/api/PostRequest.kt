@@ -36,3 +36,15 @@ data class PostResponse(
     @SerializedName("status")
     var status: String
 )
+
+data class PhotoUpdateRequest(
+    @SerializedName("apikey")
+    var apikey: String,
+    @SerializedName("token")
+    var token: String
+)
+
+data class PhotoUpdateResponse(
+    @SerializedName("status")
+    var status: String
+)
