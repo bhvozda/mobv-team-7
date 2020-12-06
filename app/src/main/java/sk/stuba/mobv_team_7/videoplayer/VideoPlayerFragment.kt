@@ -1,39 +1,28 @@
 package sk.stuba.mobv_team_7.videoplayer
 
 import android.content.ComponentName
-import android.content.Context
-import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.view.*
-import android.widget.ImageView
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.extractor.ExtractorsFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import kotlinx.android.synthetic.main.custom_controller.view.*
-import kotlinx.android.synthetic.main.video_player_fragment.*
-import sk.stuba.mobv_team_7.MainActivity
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.databinding.VideoPlayerFragmentBinding
-import sk.stuba.mobv_team_7.home.HomeViewModel
 import sk.stuba.mobv_team_7.http.VIEW_POST_URL
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 
@@ -44,7 +33,7 @@ class VideoPlayerFragment: Fragment() {
 
     private lateinit var binding: VideoPlayerFragmentBinding
 
-    private var exoplayerView : SimpleExoPlayerView? = null
+    private var exoplayerView : PlayerView? = null
     private var exoplayer : SimpleExoPlayer? = null
     private var playbackStateBuilder : PlaybackStateCompat.Builder? = null
     private var mediaSession: MediaSessionCompat? = null
@@ -74,7 +63,7 @@ class VideoPlayerFragment: Fragment() {
             }
         })
 
-        exoplayerView = binding.simpleExoPlayerView
+        exoplayerView = binding.videoPlayerPlayerView
 
         sharedViewModel.eventPostChoice.observe(viewLifecycleOwner, Observer { post ->
             initializePlayer(VIEW_POST_URL + post.videoUrl)

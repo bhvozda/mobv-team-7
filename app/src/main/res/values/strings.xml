@@ -10,4 +10,9 @@
     <string name="email">E-mail</string>
     <string name="username">Username</string>
     <string name="empty_error">Field must not be empty</string>
+    <string name="custom_controller_rewind_video">rewind video</string>
+    <string name="custom_controller_play_video">play video</string>
+    <string name="custom_controller_pause_video">pause video</string>
+    <string name="custom_controller_forward_video">forward video</string>
+    <string name="custom_controller_video_progress">/</string>
 </resources>
