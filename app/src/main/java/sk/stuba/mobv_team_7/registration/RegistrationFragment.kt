@@ -15,10 +15,10 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 import sk.stuba.mobv_team_7.R
-import sk.stuba.mobv_team_7.constants.API_KEY
-import sk.stuba.mobv_team_7.constants.URL
 import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.RegistrationFragmentBinding
+import sk.stuba.mobv_team_7.http.API_KEY
+import sk.stuba.mobv_team_7.http.URL
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 
 class RegistrationFragment : Fragment() {
@@ -70,7 +70,7 @@ class RegistrationFragment : Fragment() {
                     val jsonRequest = JsonObjectRequest(
                         URL, jsonRootUserExists,
                         Response.Listener { response ->
-                            val exists: Boolean = response.get("exists") as Boolean;
+                            val exists: Boolean = response.get("exists") as Boolean
                             if (!exists) {
                                 register(email, username, password)
                             } else {

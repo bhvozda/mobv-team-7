@@ -1,4 +1,4 @@
-package sk.stuba.mobv_team_7.video
+package sk.stuba.mobv_team_7.videoplayer
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import okhttp3.MediaType
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import org.json.JSONException
 import org.json.JSONObject
@@ -18,17 +17,29 @@ import sk.stuba.mobv_team_7.api.PostRequest
 import sk.stuba.mobv_team_7.api.PostResponse
 import java.io.File
 
-
-class VideoViewModel : ViewModel() {
-
+class VideoPlayerViewModel : ViewModel() {
 
     private var _postStatus = MutableLiveData<PostResponse>()
     val postStatus: LiveData<PostResponse>
         get() = _postStatus
 
-
     init {
         _postStatus.value = null
+    }
+
+    // The login finished event
+    private val _eventOpenPost = MutableLiveData<Boolean>()
+    val eventOpenPost: LiveData<Boolean>
+        get() = _eventOpenPost
+
+    /** Methods for buttons presses **/
+    fun onPostOpen() {
+        //TODO Do the login
+        _eventOpenPost.value = true
+    }
+
+    fun onPostOpenComplete() {
+        _eventOpenPost.value = false
     }
 
     fun postNewPost(profile: PostRequest, file: File) {

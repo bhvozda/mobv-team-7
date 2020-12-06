@@ -51,7 +51,6 @@ class ProfileFragment : Fragment() {
         val path = "res:/" + R.drawable.default_avatar;
         binding.profilePicture.setImageURI(path)
 
-
         binding.logOut.setOnClickListener{
             findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
         }
