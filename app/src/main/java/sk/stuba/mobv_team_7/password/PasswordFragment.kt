@@ -17,7 +17,6 @@ import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.databinding.PasswordFragmentBinding
 import sk.stuba.mobv_team_7.constants.API_KEY
 import sk.stuba.mobv_team_7.constants.URL
-import sk.stuba.mobv_team_7.profile.ProfileViewModel
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 
 class PasswordFragment : Fragment() {
@@ -53,7 +52,6 @@ class PasswordFragment : Fragment() {
                     val jsonRequest = JsonObjectRequest(
                         URL, jsonObject,
                         Response.Listener { response ->
-                             user.refreshToken = response.get("refresh").toString()
                              user.token = response.get("token").toString()
                             changeSuccessful()
                         },
@@ -97,12 +95,6 @@ class PasswordFragment : Fragment() {
     private fun changeSuccessful() {
         Toast.makeText(activity, "Your password has been changed successfully! ", Toast.LENGTH_LONG).show()
         findNavController().navigate(PasswordFragmentDirections.actionPasswordFragmentToProfileFragment())
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(PasswordViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
 }
