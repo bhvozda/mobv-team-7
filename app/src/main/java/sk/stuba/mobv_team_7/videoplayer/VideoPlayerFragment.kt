@@ -8,6 +8,8 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -69,6 +71,24 @@ class VideoPlayerFragment: Fragment() {
             initializePlayer(VIEW_POST_URL + post.videoUrl)
         })
         return binding.root
+    }
+
+    // Go fullscreen
+    @Override
+    override fun onResume()
+    {
+        super.onResume();
+        (context as AppCompatActivity).supportActionBar?.hide()
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+    }
+
+    // Show toolbar again
+    @Override
+    override fun onPause()
+    {
+        super.onPause();
+        (context as AppCompatActivity).supportActionBar?.show()
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
     private fun initializePlayer(url: String) {

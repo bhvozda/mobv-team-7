@@ -20,6 +20,7 @@ import android.util.Range
 import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
@@ -206,6 +207,7 @@ class VideoFragment : Fragment() {
         overlay = view.findViewById(R.id.overlay)
         viewFinder = view.findViewById(R.id.view_finder)
 
+
         viewFinder.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceDestroyed(holder: SurfaceHolder) = Unit
             override fun surfaceChanged(
@@ -234,6 +236,24 @@ class VideoFragment : Fragment() {
                     orientation -> Log.d(TAG, "Orientation changed: $orientation")
             })
         }
+    }
+
+    // Go fullscreen
+    @Override
+    override fun onResume()
+    {
+        super.onResume();
+        (context as AppCompatActivity).supportActionBar?.hide()
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+    }
+
+    // Show toolbar again
+    @Override
+    override fun onPause()
+    {
+        super.onPause();
+        (context as AppCompatActivity).supportActionBar?.show()
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
     /** Creates a [MediaRecorder] instance using the provided [Surface] as input */
