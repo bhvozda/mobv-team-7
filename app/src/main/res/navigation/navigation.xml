@@ -27,8 +27,11 @@
         <action
             android:id="@+id/action_homeFragment_to_videoFragment"
             app:destination="@id/videoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_videoPlayerFragment"
+            app:destination="@id/videoPlayerFragment" />
     </fragment>
-    <fragment
+      <fragment
         android:id="@+id/profileFragment"
         android:name="sk.stuba.mobv_team_7.profile.ProfileFragment"
         android:label="ProfileFragments"
@@ -62,6 +65,15 @@
         tools:layout="@layout/video_fragment" >
         <action
             android:id="@+id/action_videoFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoPlayerFragment"
+        android:name="sk.stuba.mobv_team_7.videoplayer.VideoPlayerFragment"
+        android:label="VideoPlayerFragment"
+        tools:layout="@layout/video_player_fragment" >
+        <action
+            android:id="@+id/action_videoPlayerFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
