@@ -1,0 +1,213 @@
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">mobv-team-7</string>\r\n    <string name=\"register\">Register</string>\r\n    <string name=\"profile\">Profile</string>\r\n    <string name=\"record_video\">Record video</string>\r\n    <string name=\"login_name\">Login name</string>\r\n    <string name=\"login\">Login</string>\r\n    <string name=\"password\">Password</string>\r\n    <string name=\"email\">E-mail</string>\r\n    <string name=\"username\">Username</string>\r\n    <string name=\"empty_error\">Field must not be empty</string>\r\n    <string name=\"old_password\">Old password</string>\r\n    <string name=\"new_password\">New password</string>\r\n    <string name=\"change_password\">Change password</string>\r\n    <string name=\"profile_picture\">profile picture</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/strings.xml	(revision 6be83a6f9911cfebc3b4f1255a0bde44db40ca8a)
++++ app/src/main/res/values/strings.xml	(date 1607273797662)
+@@ -1,14 +1,21 @@
+ <resources>
+     <string name="app_name">mobv-team-7</string>
+     <string name="register">Register</string>
++    <string name="login">Login</string>
+     <string name="profile">Profile</string>
+     <string name="record_video">Record video</string>
++    <string name="show_video">Show video</string>
+     <string name="login_name">Login name</string>
+-    <string name="login">Login</string>
+     <string name="password">Password</string>
+     <string name="email">E-mail</string>
+     <string name="username">Username</string>
+     <string name="empty_error">Field must not be empty</string>
++    <string name="custom_controller_rewind_video">rewind video</string>
++    <string name="custom_controller_play_video">play video</string>
++    <string name="custom_controller_pause_video">pause video</string>
++    <string name="custom_controller_forward_video">forward video</string>
++    <string name="custom_controller_video_progress">/</string>
++    <string name="video_button">Floating Action Video Button</string>
+     <string name="old_password">Old password</string>
+     <string name="new_password">New password</string>
+     <string name="change_password">Change password</string>
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    package=\"sk.stuba.mobv_team_7\">\r\n    <uses-permission android:name=\"android.permission.INTERNET\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>\r\n    <meta-data\r\n        android:name=\"firebase_crashlytics_collection_enabled\"\r\n        android:value=\"false\" />\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/AppTheme\"\r\n        android:usesCleartextTraffic=\"true\">\r\n        <activity android:name=\".MainActivity\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 6be83a6f9911cfebc3b4f1255a0bde44db40ca8a)
++++ app/src/main/AndroidManifest.xml	(date 1607273395392)
+@@ -1,20 +1,14 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     package="sk.stuba.mobv_team_7">
+-    <uses-permission android:name="android.permission.INTERNET" />
+-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+-    <meta-data
+-        android:name="firebase_crashlytics_collection_enabled"
+-        android:value="false" />
++
+     <application
+         android:allowBackup="true"
+         android:icon="@mipmap/ic_launcher"
+         android:label="@string/app_name"
+         android:roundIcon="@mipmap/ic_launcher_round"
+         android:supportsRtl="true"
+-        android:theme="@style/AppTheme"
+-        android:usesCleartextTraffic="true">
++        android:theme="@style/AppTheme">
+         <activity android:name=".MainActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+Index: app/src/main/java/sk/stuba/mobv_team_7/login/LoginFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package sk.stuba.mobv_team_7.login\r\n\r\nimport android.os.Bundle\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.Toast\r\nimport androidx.databinding.DataBindingUtil\r\nimport androidx.fragment.app.Fragment\r\nimport androidx.lifecycle.Observer\r\nimport androidx.lifecycle.ViewModelProvider\r\nimport androidx.navigation.fragment.findNavController\r\nimport com.android.volley.Response\r\nimport com.android.volley.toolbox.JsonObjectRequest\r\nimport com.android.volley.toolbox.Volley\r\nimport org.json.JSONObject\r\nimport sk.stuba.mobv_team_7.R\r\nimport sk.stuba.mobv_team_7.constants.API_KEY\r\nimport sk.stuba.mobv_team_7.constants.URL\r\nimport sk.stuba.mobv_team_7.data.User\r\nimport sk.stuba.mobv_team_7.databinding.LoginFragmentBinding\r\nimport sk.stuba.mobv_team_7.home.HomeFragmentDirections\r\nimport sk.stuba.mobv_team_7.shared.SharedViewModel\r\n\r\nclass LoginFragment : Fragment() {\r\n\r\n    private lateinit var viewModel: LoginViewModel\r\n    private lateinit var sharedViewModel: SharedViewModel\r\n    private lateinit var user: User\r\n\r\n    private lateinit var binding: LoginFragmentBinding\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater, container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n\r\n        binding = DataBindingUtil.inflate(\r\n            inflater,\r\n            R.layout.login_fragment,\r\n            container,\r\n            false\r\n        )\r\n\r\n        //TODO - to send arguments to other fragments use ViewModelFactory\r\n        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)\r\n        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)\r\n\r\n        binding.loginViewModel = viewModel\r\n        binding.lifecycleOwner = this\r\n\r\n        user = User()\r\n        binding.user = user\r\n\r\n        viewModel.eventLoginFinish.observe(viewLifecycleOwner, Observer { loginFinished ->\r\n            if (loginFinished) {\r\n\r\n                val queue = Volley.newRequestQueue(this.context)\r\n\r\n                val username = user.username\r\n                val password = user.password\r\n\r\n                val jsonRoot = JSONObject()\r\n                jsonRoot.put(\"action\", \"login\")\r\n                jsonRoot.put(\"apikey\", API_KEY)\r\n                jsonRoot.put(\"username\", username)\r\n                jsonRoot.put(\"password\", password)\r\n\r\n                if (!isFormWithErrors(username, password)) {\r\n                    val jsonRequest = JsonObjectRequest(\r\n                        URL, jsonRoot,\r\n                        Response.Listener { response ->\r\n                            user.email = response.get(\"email\").toString()\r\n                            user.refreshToken = response.get(\"refresh\").toString()\r\n                            user.token = response.get(\"token\").toString()\r\n                            loginSuccessful()\r\n                        },\r\n                        Response.ErrorListener {\r\n                            // TODO: crashanlytics\r\n\r\n                            Toast.makeText(activity, \"Login not succesful.\", Toast.LENGTH_LONG)\r\n                                .show()\r\n                        })\r\n                    queue.add(jsonRequest)\r\n                }\r\n\r\n                viewModel.onLoginComplete()\r\n            }\r\n        })\r\n\r\n        binding.registerButton.setOnClickListener {\r\n            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())\r\n        }\r\n\r\n        return binding.root\r\n    }\r\n\r\n    private fun loginSuccessful() {\r\n        sharedViewModel.onLoginSuccessful(user)\r\n        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())\r\n    }\r\n\r\n    private fun isFormWithErrors(username: String, password: String): Boolean {\r\n        binding.editTextUsername.error = null\r\n        binding.editTextPassword.error = null\r\n        if (username.isNullOrEmpty() && password.isNullOrEmpty()) {\r\n            binding.editTextUsername.error = resources.getString(R.string.empty_error)\r\n            binding.editTextPassword.error = resources.getString(R.string.empty_error)\r\n        } else if (username.isNullOrEmpty()) {\r\n            binding.editTextUsername.error = resources.getString(R.string.empty_error)\r\n        } else if (password.isNullOrEmpty()) {\r\n            binding.editTextPassword.error = resources.getString(R.string.empty_error)\r\n        } else {\r\n            return false\r\n        }\r\n        return true\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/sk/stuba/mobv_team_7/login/LoginFragment.kt	(revision 6be83a6f9911cfebc3b4f1255a0bde44db40ca8a)
++++ app/src/main/java/sk/stuba/mobv_team_7/login/LoginFragment.kt	(date 1607274187903)
+@@ -15,18 +15,15 @@
+ import com.android.volley.toolbox.Volley
+ import org.json.JSONObject
+ import sk.stuba.mobv_team_7.R
+-import sk.stuba.mobv_team_7.constants.API_KEY
+-import sk.stuba.mobv_team_7.constants.URL
+ import sk.stuba.mobv_team_7.data.User
+ import sk.stuba.mobv_team_7.databinding.LoginFragmentBinding
+-import sk.stuba.mobv_team_7.home.HomeFragmentDirections
++import sk.stuba.mobv_team_7.http.API_KEY
++import sk.stuba.mobv_team_7.http.URL
+ import sk.stuba.mobv_team_7.shared.SharedViewModel
+ 
+ class LoginFragment : Fragment() {
+ 
+     private lateinit var viewModel: LoginViewModel
+-    private lateinit var sharedViewModel: SharedViewModel
+-    private lateinit var user: User
+ 
+     private lateinit var binding: LoginFragmentBinding
+ 
+@@ -41,7 +38,6 @@
+             container,
+             false
+         )
+-
+         //TODO - to send arguments to other fragments use ViewModelFactory
+         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+@@ -51,7 +47,6 @@
+ 
+         user = User()
+         binding.user = user
+-
+         viewModel.eventLoginFinish.observe(viewLifecycleOwner, Observer { loginFinished ->
+             if (loginFinished) {
+ 
+@@ -77,7 +72,6 @@
+                         },
+                         Response.ErrorListener {
+                             // TODO: crashanlytics
+-
+                             Toast.makeText(activity, "Login not succesful.", Toast.LENGTH_LONG)
+                                 .show()
+                         })
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\r\napply plugin: 'kotlin-android'\r\napply plugin: 'kotlin-android-extensions'\r\napply plugin: \"androidx.navigation.safeargs.kotlin\"\r\napply plugin: \"kotlin-kapt\"\r\napply plugin: 'com.google.gms.google-services'\r\n// Apply the Crashlytics Gradle plugin\r\napply plugin: 'com.google.firebase.crashlytics'\r\n\r\nandroid {\r\n    compileSdkVersion 30\r\n    buildToolsVersion \"30.0.2\"\r\n\r\n    defaultConfig {\r\n        applicationId \"sk.stuba.mobv_team_7\"\r\n        minSdkVersion 26\r\n        targetSdkVersion 30\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n\r\n    // Enables data binding.\r\n    buildFeatures {\r\n        dataBinding true\r\n    }\r\n\r\n}\r\n\r\ndependencies {\r\n    implementation fileTree(dir: \"libs\", include: [\"*.jar\"])\r\n    implementation \"org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version\"\r\n    implementation 'androidx.core:core-ktx:1.3.2'\r\n    implementation 'androidx.appcompat:appcompat:1.2.0'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'\r\n    implementation 'androidx.legacy:legacy-support-v4:1.0.0'\r\n    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'\r\n    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'\r\n    testImplementation 'junit:junit:4.12'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.2'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'\r\n\r\n    // Kotlin\r\n    implementation \"androidx.navigation:navigation-fragment-ktx:$nav_version\"\r\n    implementation \"androidx.navigation:navigation-ui-ktx:$nav_version\"\r\n\r\n    // Support libraries\r\n    implementation \"androidx.appcompat:appcompat:$version_appcompat\"\r\n    implementation \"androidx.fragment:fragment:$version_fragment\"\r\n    implementation \"androidx.constraintlayout:constraintlayout:$version_constraint_layout\"\r\n\r\n    // requests\r\n    implementation 'com.android.volley:volley:1.1.1'\r\n\r\n    // Material design components\r\n    implementation \"com.google.android.material:material:$version_material\"\r\n\r\n\r\n    // Import the Firebase BoM\r\n    implementation platform('com.google.firebase:firebase-bom:26.1.0')\r\n\r\n    // Declare the dependencies for the Crashlytics and Analytics libraries\r\n    // When using the BoM, you don't specify versions in Firebase library dependencies\r\n    /*\r\n    implementation 'com.google.firebase:firebase-crashlytics-ktx'\r\n    implementation 'com.google.firebase:firebase-analytics-ktx'\r\n    */\r\n\r\n    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'\r\n\r\n    // Recommended: Add the Google Analytics SDK.\r\n    implementation 'com.google.firebase:firebase-analytics:18.0.0'\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 6be83a6f9911cfebc3b4f1255a0bde44db40ca8a)
++++ app/build.gradle	(date 1607273731863)
+@@ -2,10 +2,6 @@
+ apply plugin: 'kotlin-android'
+ apply plugin: 'kotlin-android-extensions'
+ apply plugin: "androidx.navigation.safeargs.kotlin"
+-apply plugin: "kotlin-kapt"
+-apply plugin: 'com.google.gms.google-services'
+-// Apply the Crashlytics Gradle plugin
+-apply plugin: 'com.google.firebase.crashlytics'
+ 
+ android {
+     compileSdkVersion 30
+@@ -57,25 +53,25 @@
+     implementation "androidx.fragment:fragment:$version_fragment"
+     implementation "androidx.constraintlayout:constraintlayout:$version_constraint_layout"
+ 
++
+     // requests
+     implementation 'com.android.volley:volley:1.1.1'
+ 
+     // Material design components
+     implementation "com.google.android.material:material:$version_material"
+ 
++    // recycler view
++    implementation "androidx.recyclerview:recyclerview:1.1.0"
++    // For control over item selection of both touch and mouse driven selection
++    implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc03"
+ 
+-    // Import the Firebase BoM
+-    implementation platform('com.google.firebase:firebase-bom:26.1.0')
++    //refresh layout for new posts
++    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+ 
+-    // Declare the dependencies for the Crashlytics and Analytics libraries
+-    // When using the BoM, you don't specify versions in Firebase library dependencies
+-    /*
+-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+-    implementation 'com.google.firebase:firebase-analytics-ktx'
+-    */
+-
++    // Firebase
+     implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+-
++    // Recommended: Add the Google Analytics SDK.
++    implementation 'com.google.firebase:firebase-analytics:18.0.0'
+     // Recommended: Add the Google Analytics SDK.
+     implementation 'com.google.firebase:firebase-analytics:18.0.0'
+ }
+\ No newline at end of file
+Index: app/src/main/java/sk/stuba/mobv_team_7/profile/ProfileFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package sk.stuba.mobv_team_7.profile\r\n\r\nimport android.os.Bundle\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport androidx.databinding.DataBindingUtil\r\nimport androidx.fragment.app.Fragment\r\nimport androidx.lifecycle.Observer\r\nimport androidx.lifecycle.ViewModelProvider\r\nimport androidx.navigation.fragment.findNavController\r\nimport sk.stuba.mobv_team_7.R\r\nimport sk.stuba.mobv_team_7.databinding.ProfileFragmentBinding\r\nimport sk.stuba.mobv_team_7.shared.SharedViewModel\r\n\r\nclass ProfileFragment : Fragment() {\r\n\r\n    private lateinit var viewModel: ProfileViewModel\r\n\r\n    private lateinit var sharedViewModel: SharedViewModel\r\n\r\n    private lateinit var binding: ProfileFragmentBinding\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater, container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n\r\n        binding = DataBindingUtil.inflate(\r\n            inflater,\r\n            R.layout.profile_fragment,\r\n            container,\r\n            false\r\n        )\r\n\r\n        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)\r\n        sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->\r\n            // TODO: profile logic\r\n            binding.name.text = user.username\r\n            binding.sendEmail.text = user.email\r\n        })\r\n\r\n        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)\r\n        binding.profileViewModel = viewModel\r\n        binding.lifecycleOwner = this\r\n\r\n\r\n\r\n        binding.logOut.setOnClickListener{\r\n            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())\r\n        }\r\n\r\n        binding.changePassword.setOnClickListener{\r\n            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToPasswordFragment())\r\n        }\r\n\r\n        return binding.root\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/sk/stuba/mobv_team_7/profile/ProfileFragment.kt	(revision 6be83a6f9911cfebc3b4f1255a0bde44db40ca8a)
++++ app/src/main/java/sk/stuba/mobv_team_7/profile/ProfileFragment.kt	(date 1607273919427)
+@@ -16,7 +16,6 @@
+ class ProfileFragment : Fragment() {
+ 
+     private lateinit var viewModel: ProfileViewModel
+-
+     private lateinit var sharedViewModel: SharedViewModel
+ 
+     private lateinit var binding: ProfileFragmentBinding
+@@ -26,6 +25,17 @@
+         savedInstanceState: Bundle?
+     ): View? {
+ 
++        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
++        sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
++            // TODO: profile logic
++            println(user.email)
++        })
++
++        sharedViewModel.eventRegistrationSuccessful.observe(viewLifecycleOwner, Observer { user ->
++            // TODO: profile logic
++            print(user)
++        })
++
+         binding = DataBindingUtil.inflate(
+             inflater,
+             R.layout.profile_fragment,
+diff --git app/src/main/java/sk/stuba/mobv_team_7/constants/HttpConstants.kt app/src/main/java/sk/stuba/mobv_team_7/http/HttpConstants.kt
+rename from app/src/main/java/sk/stuba/mobv_team_7/constants/HttpConstants.kt
+rename to app/src/main/java/sk/stuba/mobv_team_7/http/HttpConstants.kt

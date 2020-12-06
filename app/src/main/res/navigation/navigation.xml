@@ -31,7 +31,7 @@
             android:id="@+id/action_homeFragment_to_videoPlayerFragment"
             app:destination="@id/videoPlayerFragment" />
     </fragment>
-    <fragment
+      <fragment
         android:id="@+id/profileFragment"
         android:name="sk.stuba.mobv_team_7.profile.ProfileFragment"
         android:label="ProfileFragments"
@@ -39,6 +39,24 @@
         <action
             android:id="@+id/action_profileFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_passwordFragment"
+            app:destination="@id/passwordFragment" />
+        <action
+            android:id="@+id/action_passwordFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/passwordFragment"
+        android:name="sk.stuba.mobv_team_7.password.PasswordFragment"
+        android:label="PasswordFragments"
+        tools:layout="@layout/password_fragment" >
+        <action
+            android:id="@+id/action_passwordFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/videoFragment"
