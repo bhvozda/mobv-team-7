@@ -17,6 +17,7 @@ import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.databinding.PasswordFragmentBinding
 import sk.stuba.mobv_team_7.constants.API_KEY
 import sk.stuba.mobv_team_7.constants.URL
+import sk.stuba.mobv_team_7.profile.ProfileViewModel
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 
 class PasswordFragment : Fragment() {
@@ -35,6 +36,7 @@ class PasswordFragment : Fragment() {
             container,
             false
         )
+        viewModel = ViewModelProvider(this).get(PasswordViewModel::class.java)
         binding.buttonChange.setOnClickListener{
             sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
             sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->

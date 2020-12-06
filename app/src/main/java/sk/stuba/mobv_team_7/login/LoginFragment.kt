@@ -77,6 +77,7 @@ class LoginFragment : Fragment() {
                         },
                         Response.ErrorListener {
                             // TODO: crashanlytics
+
                             Toast.makeText(activity, "Login not succesful.", Toast.LENGTH_LONG)
                                 .show()
                         })
