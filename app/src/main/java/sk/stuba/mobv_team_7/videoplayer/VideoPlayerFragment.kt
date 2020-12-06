@@ -77,7 +77,7 @@ class VideoPlayerFragment: Fragment() {
     @Override
     override fun onResume()
     {
-        super.onResume();
+        super.onResume()
         (context as AppCompatActivity).supportActionBar?.hide()
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
@@ -86,7 +86,7 @@ class VideoPlayerFragment: Fragment() {
     @Override
     override fun onPause()
     {
-        super.onPause();
+        super.onPause()
         (context as AppCompatActivity).supportActionBar?.show()
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
