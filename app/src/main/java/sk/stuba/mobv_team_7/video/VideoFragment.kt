@@ -19,6 +19,7 @@ import android.util.Log
 import android.util.Range
 import android.view.*
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
@@ -28,14 +29,23 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.video_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.json.JSONObject
 import sk.stuba.mobv_team_7.BuildConfig
 import sk.stuba.mobv_team_7.R
+import sk.stuba.mobv_team_7.constants.API_KEY
+import sk.stuba.mobv_team_7.constants.URL
+import sk.stuba.mobv_team_7.constants.URL_POST
+import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.VideoFragmentBinding
+import sk.stuba.mobv_team_7.shared.SharedViewModel
 import sk.stuba.mobv_team_7.utils.AutoFitSurfaceView
 import sk.stuba.mobv_team_7.utils.OrientationLiveData
 import sk.stuba.mobv_team_7.utils.getPreviewOutputSize
@@ -58,8 +68,11 @@ class VideoFragment : Fragment() {
     private val fps = 30
 
     private lateinit var viewModel: VideoViewModel
+    private lateinit var sharedViewModel: SharedViewModel
 
     private lateinit var binding: VideoFragmentBinding
+
+    private lateinit var token: String
 
     /** Host's navigation controller */
     private val navController: NavController by lazy {
@@ -176,6 +189,11 @@ class VideoFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(VideoViewModel::class.java)
 
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+        sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
+            token = user.token.toString()
+        })
+
         binding.videoViewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -228,6 +246,8 @@ class VideoFragment : Fragment() {
         setVideoEncodingBitRate(RECORDER_VIDEO_BITRATE)
         setVideoFrameRate(fps)
         setVideoSize(width, height)
+        // 8MB - 1024 * 1024 * 8
+        setMaxFileSize(8388608L)
         setVideoEncoder(MediaRecorder.VideoEncoder.H264)
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         setInputSurface(surface)
@@ -306,24 +326,53 @@ class VideoFragment : Fragment() {
                         view.context, arrayOf(outputFile.absolutePath), null, null)
 
                     // Launch external activity via intent to play video recorded using our provider
-                    startActivity(Intent().apply {
-                        action = Intent.ACTION_VIEW
-                        type = MimeTypeMap.getSingleton()
-                            .getMimeTypeFromExtension(outputFile.extension)
-                        val authority = "${BuildConfig.APPLICATION_ID}.provider"
-                        data = FileProvider.getUriForFile(view.context, authority, outputFile)
-                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    })
+//                    startActivity(Intent().apply {
+//                        action = Intent.ACTION_VIEW
+//                        type = MimeTypeMap.getSingleton()
+//                            .getMimeTypeFromExtension(outputFile.extension)
+//                        val authority = "${BuildConfig.APPLICATION_ID}.provider"
+//                        data = FileProvider.getUriForFile(view.context, authority, outputFile)
+//                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+//                                Intent.FLAG_ACTIVITY_CLEAR_TOP
+//                    })
 
                     // Finishes our current camera screen
                     delay(VideoFragment.ANIMATION_SLOW_MILLIS)
-                    navController.popBackStack()
+
+                    postUpload(outputFile)
                 }
             }
 
             true
         }
+    }
+
+    private fun postUpload(data: File) {
+
+        val queue = Volley.newRequestQueue(this.context)
+
+
+        val jsonRoot = JSONObject()
+        jsonRoot.put("video", data)
+        jsonRoot.put("apikey", API_KEY)
+        jsonRoot.put("token", token)
+
+        val jsonRequest = JsonObjectRequest(
+            URL_POST, jsonRoot,
+            Response.Listener { response ->
+                Toast.makeText(activity, "Post created.", Toast.LENGTH_LONG)
+                    .show()
+                navController.popBackStack()
+            },
+            Response.ErrorListener {
+                // TODO: crashanlytics
+                print(it)
+                Toast.makeText(activity, "Post not succesful.", Toast.LENGTH_LONG)
+                    .show()
+
+                navController.popBackStack()
+            })
+        queue.add(jsonRequest)
     }
 
     /** Opens the camera and returns the opened device (as the result of the suspend coroutine) */
