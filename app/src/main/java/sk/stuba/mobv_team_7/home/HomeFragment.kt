@@ -30,7 +30,6 @@ class HomeFragment : Fragment() {
 
     private lateinit var viewModel: HomeViewModel
     private lateinit var sharedViewModel: SharedViewModel
-    private var token: String = ""
 
     private lateinit var binding: HomeFragmentBinding
 
@@ -96,33 +95,32 @@ class HomeFragment : Fragment() {
         postsRecycleView.layoutManager = LinearLayoutManager(this.context)
     }
 
-    private fun getAllPosts(user: User) {
-        token = user.token.toString()
-        val jsonObject = JSONObject()
-        jsonObject.put("action", "posts")
-        jsonObject.put("apikey", API_KEY)
-        jsonObject.put("token", token)
-
-        val queue = Volley.newRequestQueue(this.context)
-        val jsonRequest = JsonObjectRequestModified(
-            Request.Method.POST,
-            URL,
-            jsonObject,
-            Response.Listener<JSONArray> { posts ->
-                val postsList = mutableListOf<PostDto>()
-                for (i in 0 until posts.length()) {
-                    val jsonPost = posts.get(i)
-                    postsList.add(jsonToPostDto(jsonPost as JSONObject))
-                }
-                putPostsInView(postsList)
-                binding.swipeRefreshLayout.isRefreshing = false
-            },
-            Response.ErrorListener {
-                // TODO: crash analytics
-                Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
-                binding.swipeRefreshLayout.isRefreshing = false
-            })
-        queue.add(jsonRequest)
-    }
+//    private fun getAllPosts(user: User) {
+//        token = user.token.toString()
+//        val jsonObject = JSONObject()
+//        jsonObject.put("action", "posts")
+//        jsonObject.put("apikey", API_KEY)
+//        jsonObject.put("token", token)
+//
+//        val queue = Volley.newRequestQueue(this.context)
+//        val jsonRequest = JsonObjectRequestModified(
+//            Request.Method.POST,
+//            URL,
+//            jsonObject,
+//            Response.Listener<JSONArray> { posts ->
+//                val postsList = mutableListOf<PostDto>()
+//                for (i in 0 until posts.length()) {
+//                    val jsonPost = posts.get(i)
+//                    postsList.add(jsonToPostDto(jsonPost as JSONObject))
+//                }
+//                putPostsInView(postsList)
+////                binding.swipeRefreshLayout.isRefreshing = false
+//            },
+//            Response.ErrorListener {
+//                Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
+////                binding.swipeRefreshLayout.isRefreshing = false
+//            })
+//        queue.add(jsonRequest)
+//    }
 
 }
