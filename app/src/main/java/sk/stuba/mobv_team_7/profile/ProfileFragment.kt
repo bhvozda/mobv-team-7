@@ -8,9 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -54,6 +52,7 @@ class ProfileFragment : Fragment() {
 
     private var mConstraintLayout: ConstraintLayout? = null
     private val mConstraintSet: ConstraintSet = ConstraintSet()
+    private var menuList: Menu? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,6 +70,8 @@ class ProfileFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         binding.sharedViewModel = sharedViewModel
         binding.lifecycleOwner = this
+
+        setHasOptionsMenu(true)
 
         mConstraintLayout = binding.constraintLayout
 
@@ -93,14 +94,18 @@ class ProfileFragment : Fragment() {
 
         viewModel.eventGalleryPictureUpload.observe(viewLifecycleOwner, Observer { succesful ->
                 if (succesful) {
-                    binding.saveProfile.visibility = View.VISIBLE
+                    val item = menuList!!.findItem(R.id.saveProfile)
+                    item.isVisible = true
+
                     viewModel.onImageUploadComplete()
                 }
             })
 
         viewModel.postStatus.observe(viewLifecycleOwner, Observer { status ->
             if (status != null) {
-                binding.saveProfile.visibility = View.GONE
+
+                val item = menuList!!.findItem(R.id.saveProfile)
+                item.isVisible = false
 
                 binding.profilePicture.visibility = View.VISIBLE
                 binding.profilePictureAvatar.visibility = View.GONE
@@ -139,12 +144,25 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToPasswordFragment())
         }
 
-        binding.saveProfile.setOnClickListener {
+        return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.navbar_profile_menu, menu)
+        this.menuList = menu;
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.getItemId()
+
+        if (id == R.id.saveProfile) {
             val postRequest = PhotoUpdateRequest(API_KEY, token)
             viewModel.postNewPost(postRequest, newProfilePicture)
+            return true
         }
 
-        return binding.root
+        return true
     }
 
     private fun getUpdatedUserData() {
