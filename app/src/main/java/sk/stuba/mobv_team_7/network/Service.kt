@@ -16,22 +16,14 @@
 
 package com.example.android.devbyteviewer.network
 
-import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.Volley
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import kotlinx.coroutines.Deferred
-import org.json.JSONArray
-import org.json.JSONObject
+import okhttp3.RequestBody
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.http.GET
-import sk.stuba.mobv_team_7.data.User
-import sk.stuba.mobv_team_7.home.PostDto
-import sk.stuba.mobv_team_7.http.API_KEY
-import sk.stuba.mobv_team_7.http.JsonObjectRequestModified
-import sk.stuba.mobv_team_7.http.URL
+import retrofit2.http.Body
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import sk.stuba.mobv_team_7.http.URL_RETROFIT
+import sk.stuba.mobv_team_7.network.NetworkPostContainer
 
 // Since we only have one service, this can all go in one file.
 // If you add more services, split this to multiple files and make sure to share the retrofit
@@ -40,52 +32,57 @@ import sk.stuba.mobv_team_7.http.URL
 /**
  * A retrofit service to fetch a devbyte playlist.
  */
-//interface PlaylistService {
-//    @GET("")
-//    suspend fun getPlaylist(): NetworkVideoContainer
-//}
+interface PlaylistService {
+    @Headers(
+        "Content-Type: Application/Json",
+        "Accept: Application/Json",
+        "Cache-Control: no-cache"
+    )
+    @POST("service.php")
+    suspend fun getPosts(@Body body: RequestBody): NetworkPostContainer
+}
 
 /**
  * Main entry point for network access. Call like `DevByteNetwork.devbytes.getPlaylist()`
  */
-//object DevByteNetwork {
-//
-//    // Configure retrofit to parse JSON and use coroutines
-//    private val retrofit = Retrofit.Builder()
-//        .baseUrl(URL)
-//        .addConverterFactory(MoshiConverterFactory.create())
-//        .build()
-//
-//    val devbytes = retrofit.create(PlaylistService::class.java)
-//
-//}
+object PostNetwork {
 
-private fun getAllPosts(user: User) {
-    val token = user.token.toString()
-    val jsonObject = JSONObject()
-    jsonObject.put("action", "posts")
-    jsonObject.put("apikey", API_KEY)
-    jsonObject.put("token", token)
+    // Configure retrofit to parse JSON and use coroutines
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(URL_RETROFIT)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .build()
 
-    val queue = Volley.newRequestQueue(this.context)
-    val jsonRequest = JsonObjectRequestModified(
-        Request.Method.POST,
-        URL,
-        jsonObject,
-        Response.Listener<JSONArray> { posts ->
-            val postsList = mutableListOf<PostDto>()
-            for (i in 0 until posts.length()) {
-                val jsonPost = posts.get(i)
-                postsList.add(jsonToPostDto(jsonPost as JSONObject))
-            }
-            putPostsInView(postsList)
-//                binding.swipeRefreshLayout.isRefreshing = false
-        },
-        Response.ErrorListener {
-            Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
-//                binding.swipeRefreshLayout.isRefreshing = false
-        })
-    queue.add(jsonRequest)
+    val mobv = retrofit.create(PlaylistService::class.java)
+
 }
+
+//private fun getAllPosts(user: User) {
+//    val token = user.token.toString()
+//    val jsonObject = JSONObject()
+//    jsonObject.put("action", "posts")
+//    jsonObject.put("apikey", API_KEY)
+//    jsonObject.put("token", token)
+//
+//    val queue = Volley.newRequestQueue(this.context)
+//    val jsonRequest = JsonObjectRequestModified(
+//        Request.Method.POST,
+//        URL,
+//        jsonObject,
+//        Response.Listener<JSONArray> { posts ->
+//            val postsList = mutableListOf<PostDto>()
+//            for (i in 0 until posts.length()) {
+//                val jsonPost = posts.get(i)
+//                postsList.add(jsonToPostDto(jsonPost as JSONObject))
+//            }
+//            putPostsInView(postsList)
+////                binding.swipeRefreshLayout.isRefreshing = false
+//        },
+//        Response.ErrorListener {
+//            Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
+////                binding.swipeRefreshLayout.isRefreshing = false
+//        })
+//    queue.add(jsonRequest)
+//}
 
 

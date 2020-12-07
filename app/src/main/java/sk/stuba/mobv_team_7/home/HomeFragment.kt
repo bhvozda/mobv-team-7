@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.home_fragment.*
 import org.json.JSONArray
 import org.json.JSONObject
 import sk.stuba.mobv_team_7.R
+import sk.stuba.mobv_team_7.api.PostRequest
 import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.HomeFragmentBinding
 import sk.stuba.mobv_team_7.http.API_KEY
@@ -56,9 +57,11 @@ class HomeFragment : Fragment() {
         }
 
         sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
-            getAllPosts(user)
+            viewModel.refreshDataFromRepository(user)
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
+            //getAllPosts(user)
             binding.swipeRefreshLayout.setOnRefreshListener {
-                getAllPosts(user)
+                //getAllPosts(user)
             }
         })
 
@@ -78,7 +81,7 @@ class HomeFragment : Fragment() {
 
     private fun jsonToPostDto(jsonObject: JSONObject): PostDto {
         val postId = jsonObject.get("postid").toString()
-        val createdAt = SimpleDateFormat(DATE_FORMAT_RESPONSE).parse(jsonObject.get("created").toString())
+        val createdAt = jsonObject.get("created").toString()
         val videoUrl = jsonObject.get("videourl").toString()
         val username = jsonObject.get("username").toString()
         val profile = jsonObject.get("profile").toString()

@@ -1,5 +1,6 @@
 package sk.stuba.mobv_team_7.api
 
+import com.example.android.devbyteviewer.network.PostNetwork
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Retrofit

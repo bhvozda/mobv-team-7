@@ -10,7 +10,7 @@ import java.util.*
 data class DatabasePost constructor(
     @PrimaryKey
     val postId: String,
-    val createdAt: Date,
+    val createdAt: String,
     val videoUrl: String,
     val username: String,
     val profile: String)
@@ -21,9 +21,9 @@ data class DatabasePost constructor(
 fun List<DatabasePost>.asDomainModel(): List<PostDto> {
     return map {
         PostDto(
-            postId = it.postId,
-            createdAt = it.createdAt,
-            videoUrl = it.videoUrl,
+            postid = it.postId,
+            created = it.createdAt,
+            videourl = it.videoUrl,
             username = it.username,
             profile = it.profile)
     }

@@ -42,7 +42,7 @@ class PostsAdapter(
     override fun onBindViewHolder(holder: ItemPostViewHolder, position: Int) {
         holder.itemView.apply {
             title.text = posts[position].username
-            description.text = dateFormat.format(posts[position].createdAt)
+            description.text = dateFormat.format(posts[position].created)
         }
     }
 

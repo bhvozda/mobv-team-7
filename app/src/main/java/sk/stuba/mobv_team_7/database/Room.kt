@@ -15,7 +15,7 @@ interface PostDao {
 
 
 
-@Database(entities = [DatabasePost::class], version = 1)
+@Database(entities = [DatabasePost::class], version = 1, exportSchema = false)
 abstract class PostsDatabase: RoomDatabase() {
     abstract val postDao: PostDao
 }
