@@ -73,24 +73,6 @@ class VideoPlayerFragment: Fragment() {
         return binding.root
     }
 
-    // Go fullscreen
-    @Override
-    override fun onResume()
-    {
-        super.onResume()
-        (context as AppCompatActivity).supportActionBar?.hide()
-        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-    }
-
-    // Show toolbar again
-    @Override
-    override fun onPause()
-    {
-        super.onPause()
-        (context as AppCompatActivity).supportActionBar?.show()
-        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-    }
-
     private fun initializePlayer(url: String) {
         val trackSelector = DefaultTrackSelector()
         exoplayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
@@ -112,6 +94,25 @@ class VideoPlayerFragment: Fragment() {
 
         mediaSession?.setPlaybackState(playbackStateBuilder?.build())
         mediaSession?.isActive = true
+    }
+
+    // Go fullscreen
+    @Override
+    override fun onResume()
+    {
+        super.onResume()
+        (context as AppCompatActivity).supportActionBar?.hide()
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+    }
+
+    // Show toolbar again
+    @Override
+    override fun onPause()
+    {
+        super.onPause()
+        (context as AppCompatActivity).supportActionBar?.show()
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        releasePlayer()
     }
 
     override fun onDestroy() {
