@@ -9,15 +9,16 @@
          click handlers, and state variables. -->
     <data>
         <variable
-            name="profileViewModel"
-            type="sk.stuba.mobv_team_7.profile.ProfileViewModel" />
+            name="sharedViewModel"
+            type="sk.stuba.mobv_team_7.shared.SharedViewModel" />
     </data>
 
     <!-- Start of the visible fragment layout using ConstraintLayout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".profile.ProfileFragment">
+        tools:context=".profile.ProfileFragment"
+        android:id="@+id/constraint_layout">
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/profilePicture"
@@ -31,15 +32,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.159"
-            fresco:roundAsCircle="true" />
+            fresco:roundAsCircle="true"/>
 
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/profilePictureAvatar"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.159"
+            fresco:roundAsCircle="true"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:text=""
+            tools:text="Name Placeholder"
+            android:text="@{sharedViewModel.user.username}"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -58,7 +74,7 @@
             android:contentDescription="email icon"
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@+id/name"
-            app:srcCompat="@android:drawable/sym_action_email" />
+            app:srcCompat="@drawable/ic_baseline_email_24" />
 
         <TextView
             android:id="@+id/sendEmail"
@@ -66,32 +82,45 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="56dp"
-            android:text=""
+            tools:text="Email Placeholder"
+            android:text="@{sharedViewModel.user.email}"
             android:textSize="18sp"
             app:layout_constraintStart_toEndOf="@+id/emailIcon"
             app:layout_constraintTop_toBottomOf="@+id/name" />
 
-        <Button
+        <TextView
             android:id="@+id/changePassword"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="72dp"
-            android:text="Change password"
+            android:layout_marginTop="50dp"
+            android:text="@string/change_password"
             android:textSize="18sp"
+            android:textColor="#66c4ff"
             app:layout_constraintStart_toStartOf="@+id/emailIcon"
             app:layout_constraintTop_toBottomOf="@+id/sendEmail" />
 
-        <Button
+        <TextView
             android:id="@+id/logOut"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Log out"
+            android:text="@string/log_out"
             android:textSize="18sp"
+            android:textColor="#66c4ff"
             app:layout_constraintStart_toStartOf="@+id/emailIcon"
             app:layout_constraintTop_toBottomOf="@+id/changePassword" />
 
+        <Button
+            android:id="@+id/saveProfile"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save_profile_changes"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/emailIcon"
+            app:layout_constraintTop_toBottomOf="@+id/logOut" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

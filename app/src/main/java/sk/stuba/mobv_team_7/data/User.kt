@@ -32,5 +32,6 @@ class User : BaseObservable() {
 
     var refreshToken: String? = null
     var token: String? = null
+    var profile: String? = null
 
 }
