@@ -168,6 +168,9 @@ class VideoPlayerFragment: Fragment() {
 
         viewModel.postNewPost(postRequest, outputFile)
         Log.d("TAG_TAG", "file saving")
+
+        sharedViewModel.clearPostFlag()
+
         findNavController().navigate(VideoPlayerFragmentDirections.actionVideoPlayerFragmentToHomeFragment())
     }
 }

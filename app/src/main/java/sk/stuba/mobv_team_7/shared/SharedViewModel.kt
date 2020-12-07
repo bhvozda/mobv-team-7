@@ -45,4 +45,8 @@ class SharedViewModel(): ViewModel() {
         _eventPostUpload.postValue(post)
         _eventUploadFlag.postValue(flag)
     }
+
+    fun clearPostFlag() {
+        _eventUploadFlag.postValue(false)
+    }
 }
