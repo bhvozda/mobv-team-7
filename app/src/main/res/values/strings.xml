@@ -20,4 +20,5 @@
     <string name="new_password">New password</string>
     <string name="change_password">Change password</string>
     <string name="profile_picture">profile picture</string>
+    <string name="video_record">Record</string>
 </resources>

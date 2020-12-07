@@ -14,7 +14,6 @@ import android.os.HandlerThread
 import android.util.Log
 import android.util.Range
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -23,15 +22,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.video_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import sk.stuba.mobv_team_7.R
-import sk.stuba.mobv_team_7.api.PostRequest
 import sk.stuba.mobv_team_7.databinding.VideoFragmentBinding
-import sk.stuba.mobv_team_7.http.API_KEY
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 import sk.stuba.mobv_team_7.utils.AutoFitSurfaceView
 import sk.stuba.mobv_team_7.utils.OrientationLiveData
@@ -49,7 +47,7 @@ class VideoFragment : Fragment() {
      * id: 0 - back camera
      * id: 1 - front camera
      * */
-    private val cameraId : String = "0"
+    private var cameraId : String = "0"
     private val width = 1920
     private val height = 1080
     private val fps = 30
@@ -181,6 +179,15 @@ class VideoFragment : Fragment() {
             token = user.token.toString()
         })
 
+        binding.flipButton.setOnClickListener{
+            cameraId = if (cameraId == "0") {
+                "1"
+            } else {
+                "0"
+            }
+
+        }
+
         binding.videoViewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -225,23 +232,23 @@ class VideoFragment : Fragment() {
         }
     }
 
-    // Go fullscreen
-    @Override
-    override fun onResume()
-    {
-        super.onResume()
-        (context as AppCompatActivity).supportActionBar?.hide()
-        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-    }
-
-    // Show toolbar again
-    @Override
-    override fun onPause()
-    {
-        super.onPause()
-        (context as AppCompatActivity).supportActionBar?.show()
-        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-    }
+//    // Go fullscreen
+//    @Override
+//    override fun onResume()
+//    {
+//        super.onResume()
+//        (context as AppCompatActivity).supportActionBar?.hide()
+//        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+//    }
+//
+//    // Show toolbar again
+//    @Override
+//    override fun onPause()
+//    {
+//        super.onPause()
+//        (context as AppCompatActivity).supportActionBar?.show()
+//        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+//    }
 
     /** Creates a [MediaRecorder] instance using the provided [Surface] as input */
     private fun createRecorder(surface: Surface) = MediaRecorder().apply {
@@ -342,18 +349,21 @@ class VideoFragment : Fragment() {
 //                                Intent.FLAG_ACTIVITY_CLEAR_TOP
 //                    })
 
-                    val postRequest = PostRequest(API_KEY, token)
-
-                    viewModel.postNewPost(postRequest, outputFile)
-                    Log.d("TAG_TAG", "file saving")
-
-                    // Finishes our current camera screen
-                    delay(VideoFragment.ANIMATION_SLOW_MILLIS)
+                    sendVideoOnReview(outputFile)
+//
+//                    // Finishes our current camera screen
+//                    delay(VideoFragment.ANIMATION_SLOW_MILLIS)
                 }
             }
 
             true
         }
+    }
+
+    // Go to preview fragment and see video
+    private fun sendVideoOnReview(post: File) {
+        sharedViewModel.onPostUpload(post, true)
+        findNavController().navigate(VideoFragmentDirections.actionVideoFragmentToVideoPlayerFragment())
     }
 
     /** Opens the camera and returns the opened device (as the result of the suspend coroutine) */

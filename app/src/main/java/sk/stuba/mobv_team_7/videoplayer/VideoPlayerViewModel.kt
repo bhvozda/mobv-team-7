@@ -71,6 +71,7 @@ class VideoPlayerViewModel : ViewModel() {
             }
 
             override fun onResponse(call: Call<PostResponse>, response: Response<PostResponse>) {
+                Log.d("TAG_TAG", "Video uploaded succesfully")
                 _postStatus.value = response.body()
             }
         })

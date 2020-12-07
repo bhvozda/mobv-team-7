@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,9 +25,12 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import sk.stuba.mobv_team_7.R
+import sk.stuba.mobv_team_7.api.PostRequest
 import sk.stuba.mobv_team_7.databinding.VideoPlayerFragmentBinding
+import sk.stuba.mobv_team_7.http.API_KEY
 import sk.stuba.mobv_team_7.http.VIEW_POST_URL
 import sk.stuba.mobv_team_7.shared.SharedViewModel
+import java.io.File
 
 class VideoPlayerFragment: Fragment() {
 
@@ -34,6 +38,9 @@ class VideoPlayerFragment: Fragment() {
     private lateinit var sharedViewModel: SharedViewModel
 
     private lateinit var binding: VideoPlayerFragmentBinding
+
+    private lateinit var token: String
+    private lateinit var outputFile: File
 
     private var exoplayerView : PlayerView? = null
     private var exoplayer : SimpleExoPlayer? = null
@@ -67,19 +74,47 @@ class VideoPlayerFragment: Fragment() {
 
         exoplayerView = binding.videoPlayerPlayerView
 
-        sharedViewModel.eventPostChoice.observe(viewLifecycleOwner, Observer { post ->
-            initializePlayer(VIEW_POST_URL + post.videoUrl)
+        /** Check if upload flag is on
+         *
+         * if going from Video fragment we let user preview recorded video and upload it
+         * if going from home fragment we will display video from posts
+         * */
+        sharedViewModel.eventUploadFlag.observe(viewLifecycleOwner, Observer { flag ->
+            if (flag == true) {
+                /** GET Token for video upload  */
+                sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
+                    token = user.token.toString()
+                })
+                /** SHOW Captured video preview */
+                sharedViewModel.eventPostUpload.observe(viewLifecycleOwner, Observer { post ->
+                    outputFile = post
+                    initializePlayer(null, Uri.fromFile(post))
+                })
+            } else {
+                /** GET Token for video upload  */
+                sharedViewModel.eventPostChoice.observe(viewLifecycleOwner, Observer { post ->
+                    initializePlayer(VIEW_POST_URL + post.videoUrl, null)
+                })
+            }
         })
+
         return binding.root
     }
 
-    private fun initializePlayer(url: String) {
+    private fun initializePlayer(url: String?, uri: Uri?) {
         val trackSelector = DefaultTrackSelector()
         exoplayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
         exoplayerView?.player = exoplayer
 
         val userAgent = Util.getUserAgent(context, "Exo")
-        val mediaUri = Uri.parse(url)
+
+        val mediaUri: Uri
+        if (uri != null) {
+            mediaUri = uri
+        } else {
+            mediaUri = Uri.parse(url)
+        }
+
         val mediaSource = ExtractorMediaSource(mediaUri, DefaultDataSourceFactory(context, userAgent), DefaultExtractorsFactory(), null, null)
 
         exoplayer?.prepare(mediaSource)
@@ -129,6 +164,10 @@ class VideoPlayerFragment: Fragment() {
     }
 
     private fun postOpenedSuccessfully() {
+        val postRequest = PostRequest(API_KEY, token)
+
+        viewModel.postNewPost(postRequest, outputFile)
+        Log.d("TAG_TAG", "file saving")
         findNavController().navigate(VideoPlayerFragmentDirections.actionVideoPlayerFragmentToHomeFragment())
     }
 }
