@@ -38,6 +38,11 @@ class SharedViewModel(): ViewModel() {
         _eventLoginSuccessful.value = user
     }
 
+    fun onLogout() {
+        _user.value = null
+        _eventLoginSuccessful.value = null
+    }
+
     fun onRegistrationSuccessful(user: User) {
         _eventRegistrationSuccessful.value = user
     }

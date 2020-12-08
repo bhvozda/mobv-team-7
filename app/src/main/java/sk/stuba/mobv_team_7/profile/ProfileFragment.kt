@@ -151,14 +151,12 @@ class ProfileFragment : Fragment() {
             val jsonRoot = JSONObject()
             jsonRoot.put("action", "refreshToken")
             jsonRoot.put("apikey", API_KEY)
-            jsonRoot.put("refreshToken", binding.sharedViewModel.user.value?.refreshToken)
+            jsonRoot.put("refreshToken", sharedViewModel.user.value?.refreshToken)
 
             val jsonRequest = JsonObjectRequest(
                 URL, jsonRoot,
                 Response.Listener { response ->
-                    binding.sharedViewModel.user.value?.refreshToken = null
-                    binding.sharedViewModel.user.value?.token = null
-                    binding.sharedViewModel.user.value?.profile = null
+                    sharedViewModel.onLogout()
                     findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
                 },
                 Response.ErrorListener {
