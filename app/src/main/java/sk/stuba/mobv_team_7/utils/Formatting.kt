@@ -16,7 +16,7 @@ class FormattingUtils {
             var now = LocalDateTime.now()
 
             // fix negative units bug
-            if (fromDateTime.isBefore(now)) {
+            if (now.isBefore(fromDateTime)) {
                 var tmp = fromDateTime
                 fromDateTime = now
                 now = tmp
