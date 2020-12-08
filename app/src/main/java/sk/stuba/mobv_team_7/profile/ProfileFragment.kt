@@ -19,20 +19,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.core.ImagePipeline
 import kotlinx.android.synthetic.main.profile_picture_dialog.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.api.PhotoUpdateRequest
 import sk.stuba.mobv_team_7.databinding.ProfileFragmentBinding
 import sk.stuba.mobv_team_7.http.API_KEY
-import sk.stuba.mobv_team_7.http.URL
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 import sk.stuba.mobv_team_7.utils.URIPathHelper
 import java.io.File
@@ -52,6 +47,9 @@ class ProfileFragment : Fragment() {
     private var mConstraintLayout: ConstraintLayout? = null
     private val mConstraintSet: ConstraintSet = ConstraintSet()
     private var menuList: Menu? = null
+
+    private val IMAGE_PICK_CODE = 1000
+    private val PERMISSION_CODE = 1001
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -95,7 +93,6 @@ class ProfileFragment : Fragment() {
                 if (succesful) {
                     val item = menuList!!.findItem(R.id.saveProfile)
                     item.isVisible = true
-
                     viewModel.onImageUploadComplete()
                 }
             })
@@ -116,10 +113,17 @@ class ProfileFragment : Fragment() {
 
                 // Update shared view model after new image was uploaded
                 lifecycleScope.launch(Dispatchers.IO) {
-                    getUpdatedUserData()
+                    viewModel.getUpdatedUserData(token)
                 }
 
-                viewModel.onImagePostCompleted()
+                viewModel.onImagePostComplete()
+            }
+        })
+
+        viewModel.eventUserUpdated.observe(viewLifecycleOwner, Observer { userProfile ->
+            if (!userProfile.isNullOrEmpty()){
+                sharedViewModel.user.value?.profile = userProfile
+                viewModel.onGetUpdatedUserDataComplete()
             }
         })
 
@@ -157,32 +161,13 @@ class ProfileFragment : Fragment() {
 
         if (id == R.id.saveProfile) {
             val postRequest = PhotoUpdateRequest(API_KEY, token)
-            viewModel.postNewPost(postRequest, newProfilePicture)
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.postNewPost(postRequest, newProfilePicture)
+            }
             return true
         }
 
         return true
-    }
-
-    private fun getUpdatedUserData() {
-        val queue = Volley.newRequestQueue(this.context)
-
-        val jsonRoot = JSONObject()
-        jsonRoot.put("action", "userProfile")
-        jsonRoot.put("apikey", API_KEY)
-        jsonRoot.put("token", token)
-
-        val jsonRequest = JsonObjectRequest(
-            URL, jsonRoot,
-            Response.Listener { response ->
-                sharedViewModel.user.value?.profile = response.get("profile").toString()
-            },
-            Response.ErrorListener {
-                // TODO: crashanlytics
-                Toast.makeText(activity, "Get user info not successful.", Toast.LENGTH_LONG)
-                    .show()
-            })
-        queue.add(jsonRequest)
     }
 
     private fun pickImageFromGallery() {
@@ -190,14 +175,6 @@ class ProfileFragment : Fragment() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, IMAGE_PICK_CODE)
-    }
-
-    companion object {
-        //image pick code
-        private val IMAGE_PICK_CODE = 1000
-
-        //Permission code
-        private val PERMISSION_CODE = 1001
     }
 
     //handle requested permission result
@@ -237,7 +214,7 @@ class ProfileFragment : Fragment() {
     }
 
     //Dialog with profile pic actions
-    fun showMessageBox() {
+    private fun showMessageBox() {
 
         //Inflate the dialog as custom view
         val messageBoxView =
@@ -282,37 +259,27 @@ class ProfileFragment : Fragment() {
         }
 
         messageBoxView.buttonDelete.setOnClickListener {
-            val queue = Volley.newRequestQueue(this.context)
-
-            val jsonRoot = JSONObject()
-            jsonRoot.put("action", "clearPhoto")
-            jsonRoot.put("apikey", API_KEY)
-            jsonRoot.put("token", token)
-
-            lifecycleScope.launch(Dispatchers.IO) {
-                val jsonRequest = JsonObjectRequest(
-                    URL, jsonRoot,
-                    Response.Listener { _ ->
-                        messageBoxInstance.dismiss()
-
-                        binding.profilePicture.visibility = View.GONE
-                        binding.profilePictureAvatar.visibility = View.VISIBLE
-
-                        mConstraintSet.clone(mConstraintLayout)
-                        mConstraintSet.connect(binding.name.id, ConstraintSet.TOP,
-                            binding.profilePictureAvatar.id, ConstraintSet.BOTTOM)
-                        mConstraintSet.applyTo(mConstraintLayout)
-
-                        sharedViewModel.user.value?.profile = ""
-                    },
-                    Response.ErrorListener {
-                        // TODO: crashanlytics
-                        Toast.makeText(activity, "Delete pic not succesful.", Toast.LENGTH_LONG)
-                            .show()
-                    })
-                queue.add(jsonRequest)
-            }
+            viewModel.deleteUserPicture(token)
         }
-    }
 
+        viewModel.eventUserPictureDeleted.observe(viewLifecycleOwner, Observer { isDeleted ->
+            if (isDeleted){
+                messageBoxInstance.dismiss()
+
+                binding.profilePicture.visibility = View.GONE
+                binding.profilePictureAvatar.visibility = View.VISIBLE
+
+                mConstraintSet.clone(mConstraintLayout)
+                mConstraintSet.connect(
+                    binding.name.id, ConstraintSet.TOP,
+                    binding.profilePictureAvatar.id, ConstraintSet.BOTTOM
+                )
+                mConstraintSet.applyTo(mConstraintLayout)
+
+                sharedViewModel.user.value?.profile = ""
+
+                viewModel.onDeleteUserPictureComplete()
+            }
+        })
+    }
 }
