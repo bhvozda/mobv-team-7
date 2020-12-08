@@ -157,7 +157,7 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.getItemId()
+        val id = item.itemId
 
         if (id == R.id.saveProfile) {
             val postRequest = PhotoUpdateRequest(API_KEY, token)
@@ -165,6 +165,10 @@ class ProfileFragment : Fragment() {
                 viewModel.postNewPost(postRequest, newProfilePicture)
             }
             return true
+        }
+
+        if (id == R.id.goHomeButton) {
+            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToHomeFragment())
         }
 
         return true

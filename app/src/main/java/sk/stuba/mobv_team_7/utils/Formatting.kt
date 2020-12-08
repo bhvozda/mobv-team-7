@@ -18,25 +18,41 @@ class FormattingUtils {
             val months = fromDateTime.until(now, ChronoUnit.MONTHS)
             if (months >= 12.toLong()) {
                 val years = fromDateTime.until(now, ChronoUnit.YEARS)
-                return "$years y"
+                var s = "year"
+                if (years > 1) {
+                    s += "s"
+                }
+                return "$years $s ago"
             }
             if (months == 0.toLong()) {
                 val days = fromDateTime.until(now, ChronoUnit.DAYS)
                 if (days in 1..28) {
-                    return "$days d"
+                    var s = "day"
+                    if (days > 1) {
+                        s += "s"
+                    }
+                    return "$days $s ago"
                 }
                 if (days == 0.toLong()) {
                     val hours = fromDateTime.until(now, ChronoUnit.HOURS)
                     if (hours in 1..23) {
-                        return "$hours h"
+                        var s = "hour"
+                        if (hours > 1) {
+                            s += "s"
+                        }
+                        return "$hours $s ago"
                     }
                     if (hours == 0.toLong()) {
                         val minutes = fromDateTime.until(now, ChronoUnit.MINUTES)
-                        return "$minutes m"
+                        var s = "minute"
+                        if (minutes > 1) {
+                            s += "s"
+                        }
+                        return "$minutes $s ago"
                     }
                 }
             } else {
-                return "$months months"
+                return "$months month(s) ago"
             }
 
             return "... one time, next time"

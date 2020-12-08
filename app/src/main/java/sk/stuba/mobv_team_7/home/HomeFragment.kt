@@ -40,6 +40,8 @@ class HomeFragment : Fragment() {
         binding.homeViewModel = viewModel
         binding.lifecycleOwner = this
 
+        setHasOptionsMenu(true)
+
         binding.videoButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoFragment())
         }
@@ -70,7 +72,6 @@ class HomeFragment : Fragment() {
             }
         })
 
-        setHasOptionsMenu(true)
         return binding.root
     }
 
