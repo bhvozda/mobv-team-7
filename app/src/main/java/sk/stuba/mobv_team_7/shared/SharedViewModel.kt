@@ -13,6 +13,10 @@ class SharedViewModel(): ViewModel() {
     val eventLoginSuccessful: LiveData<User>
         get() = _eventLoginSuccessful
 
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User>
+        get() = _user
+
     private val _eventRegistrationSuccessful = MutableLiveData<User>()
     val eventRegistrationSuccessful: LiveData<User>
         get() = _eventRegistrationSuccessful
@@ -30,6 +34,7 @@ class SharedViewModel(): ViewModel() {
         get() = _eventUploadFlag
 
     fun onLoginSuccessful(user: User) {
+        _user.value = user
         _eventLoginSuccessful.value = user
     }
 

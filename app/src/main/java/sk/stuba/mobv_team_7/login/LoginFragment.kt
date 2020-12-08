@@ -72,6 +72,7 @@ class LoginFragment : Fragment() {
                             user.email = response.get("email").toString()
                             user.refreshToken = response.get("refresh").toString()
                             user.token = response.get("token").toString()
+                            user.profile = response.get("profile").toString()
                             loginSuccessful()
                         },
                         Response.ErrorListener {

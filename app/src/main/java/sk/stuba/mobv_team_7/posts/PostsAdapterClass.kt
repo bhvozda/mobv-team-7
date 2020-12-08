@@ -7,15 +7,14 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_post.view.*
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.home.PostDto
-import sk.stuba.mobv_team_7.http.DATE_FORMAT_POST
-import java.text.SimpleDateFormat
+import sk.stuba.mobv_team_7.utils.FormattingUtils
 
 class PostsAdapter(
     var posts: List<PostDto>,
     val listener: (PostDto) -> Unit
 ) : RecyclerView.Adapter<PostsAdapter.ItemPostViewHolder>() {
 
-    private val dateFormat = SimpleDateFormat(DATE_FORMAT_POST)
+    private val WANNA_BE_FANCY = true
 
     inner class ItemPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
@@ -42,7 +41,7 @@ class PostsAdapter(
     override fun onBindViewHolder(holder: ItemPostViewHolder, position: Int) {
         holder.itemView.apply {
             title.text = posts[position].username
-            description.text = dateFormat.format(posts[position].createdAt)
+            description.text = FormattingUtils.dateFormatting(posts[position].created, false)
         }
     }
 
