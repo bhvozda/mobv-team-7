@@ -110,8 +110,8 @@ class ProfileFragment : Fragment() {
                 binding.profilePictureAvatar.visibility = View.GONE
 
                 mConstraintSet.clone(mConstraintLayout)
-                mConstraintSet.connect(R.id.name, ConstraintSet.TOP,
-                    R.id.profilePicture, ConstraintSet.BOTTOM)
+                mConstraintSet.connect(binding.name.id, ConstraintSet.TOP,
+                    binding.profilePicture.id, ConstraintSet.BOTTOM)
                 mConstraintSet.applyTo(mConstraintLayout)
 
                 // Update shared view model after new image was uploaded
@@ -299,8 +299,8 @@ class ProfileFragment : Fragment() {
                         binding.profilePictureAvatar.visibility = View.VISIBLE
 
                         mConstraintSet.clone(mConstraintLayout)
-                        mConstraintSet.connect(R.id.name, ConstraintSet.TOP,
-                            R.id.profilePictureAvatar, ConstraintSet.BOTTOM)
+                        mConstraintSet.connect(binding.name.id, ConstraintSet.TOP,
+                            binding.profilePictureAvatar.id, ConstraintSet.BOTTOM)
                         mConstraintSet.applyTo(mConstraintLayout)
 
                         sharedViewModel.user.value?.profile = ""
