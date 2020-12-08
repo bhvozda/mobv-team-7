@@ -52,7 +52,7 @@ class PasswordFragment : Fragment() {
                     val jsonRequest = JsonObjectRequest(
                         URL, jsonObject,
                         Response.Listener { response ->
-                             user.token = response.get("token").toString()
+                            user.token = response.get("token").toString()
                             changeSuccessful()
                         },
                         Response.ErrorListener {
