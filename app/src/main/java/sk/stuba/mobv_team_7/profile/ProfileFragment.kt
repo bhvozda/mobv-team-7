@@ -92,11 +92,26 @@ class ProfileFragment : Fragment() {
                 }
             }
             binding.logOut.setOnClickListener {
-                user.refreshToken = null
-                user.token = null
-                user.profile = null
-                findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
+                val queue = Volley.newRequestQueue(this.context)
 
+                val jsonRoot = JSONObject()
+                jsonRoot.put("action", "refreshToken")
+                jsonRoot.put("apikey", API_KEY)
+                jsonRoot.put("refreshToken", user.refreshToken.toString())
+
+                val jsonRequest = JsonObjectRequest(
+                    URL, jsonRoot,
+                    Response.Listener { response ->
+                        user.refreshToken = null
+                        user.token = null
+                        user.profile = null
+                        findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
+                    },
+                    Response.ErrorListener {
+                        Toast.makeText(activity, "Refresh token not successful.", Toast.LENGTH_LONG)
+                            .show()
+                    })
+                queue.add(jsonRequest)
             }
         })
 

@@ -52,7 +52,10 @@ class PasswordFragment : Fragment() {
                     val jsonRequest = JsonObjectRequest(
                         URL, jsonObject,
                         Response.Listener { response ->
+                            user.email = response.get("email").toString()
+                            user.refreshToken = response.get("refresh").toString()
                             user.token = response.get("token").toString()
+                            user.profile = response.get("profile").toString()
                             changeSuccessful()
                         },
                         Response.ErrorListener {
@@ -60,7 +63,6 @@ class PasswordFragment : Fragment() {
                             Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
                         })
                     queue.add(jsonRequest)
-                    changeSuccessful()
                 }
 
             })
