@@ -66,7 +66,7 @@ class VideoPlayerFragment: Fragment() {
         exoplayerView = binding.videoPlayerPlayerView
 
         sharedViewModel.eventPostChoice.observe(viewLifecycleOwner, Observer { post ->
-            initializePlayer(VIEW_POST_URL + post.videoUrl)
+            initializePlayer(VIEW_POST_URL + post.videourl)
         })
         return binding.root
     }

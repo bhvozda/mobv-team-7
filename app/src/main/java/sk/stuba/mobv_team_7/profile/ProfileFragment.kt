@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.profile_picture_dialog.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import androidx.navigation.fragment.findNavController
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.api.PhotoUpdateRequest
 import sk.stuba.mobv_team_7.databinding.ProfileFragmentBinding
