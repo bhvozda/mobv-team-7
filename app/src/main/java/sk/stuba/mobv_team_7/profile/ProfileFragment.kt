@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -29,7 +28,6 @@ import kotlinx.android.synthetic.main.profile_picture_dialog.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import androidx.navigation.fragment.findNavController
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.api.PhotoUpdateRequest
 import sk.stuba.mobv_team_7.databinding.ProfileFragmentBinding
@@ -76,13 +74,13 @@ class ProfileFragment : Fragment() {
 
         mConstraintLayout = binding.constraintLayout
 
-        sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
+        sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer {
             val profile = sharedViewModel.user.value?.profile
             token = sharedViewModel.user.value?.token.toString()
 
             if (!profile.isNullOrEmpty()) {
                 val uri: Uri =
-                    Uri.parse("http://api.mcomputing.eu/mobv/uploads/" + profile)
+                    Uri.parse("http://api.mcomputing.eu/mobv/uploads/$profile")
                 lifecycleScope.launch(Dispatchers.IO) {
                     binding.profilePicture.setImageURI(uri)
                     Fresco.getImagePipeline().evictFromCache(uri);
@@ -111,10 +109,10 @@ class ProfileFragment : Fragment() {
                 binding.profilePicture.visibility = View.VISIBLE
                 binding.profilePictureAvatar.visibility = View.GONE
 
-                mConstraintSet.clone(mConstraintLayout);
+                mConstraintSet.clone(mConstraintLayout)
                 mConstraintSet.connect(R.id.name, ConstraintSet.TOP,
-                    R.id.profilePicture, ConstraintSet.BOTTOM);
-                mConstraintSet.applyTo(mConstraintLayout);
+                    R.id.profilePicture, ConstraintSet.BOTTOM)
+                mConstraintSet.applyTo(mConstraintLayout)
 
                 // Update shared view model after new image was uploaded
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -151,7 +149,7 @@ class ProfileFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.navbar_profile_menu, menu)
-        this.menuList = menu;
+        this.menuList = menu
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -196,10 +194,10 @@ class ProfileFragment : Fragment() {
 
     companion object {
         //image pick code
-        private val IMAGE_PICK_CODE = 1000;
+        private val IMAGE_PICK_CODE = 1000
 
         //Permission code
-        private val PERMISSION_CODE = 1001;
+        private val PERMISSION_CODE = 1001
     }
 
     //handle requested permission result
@@ -269,16 +267,16 @@ class ProfileFragment : Fragment() {
                     PackageManager.PERMISSION_DENIED
                 ) {
                     //permission denied
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                     //show popup to request runtime permission
-                    requestPermissions(permissions, PERMISSION_CODE);
+                    requestPermissions(permissions, PERMISSION_CODE)
                 } else {
                     //permission already granted
-                    pickImageFromGallery();
+                    pickImageFromGallery()
                 }
             } else {
                 //system OS is < Marshmallow
-                pickImageFromGallery();
+                pickImageFromGallery()
             }
             messageBoxInstance.dismiss()
         }
@@ -300,10 +298,10 @@ class ProfileFragment : Fragment() {
                         binding.profilePicture.visibility = View.GONE
                         binding.profilePictureAvatar.visibility = View.VISIBLE
 
-                        mConstraintSet.clone(mConstraintLayout);
+                        mConstraintSet.clone(mConstraintLayout)
                         mConstraintSet.connect(R.id.name, ConstraintSet.TOP,
-                            R.id.profilePictureAvatar, ConstraintSet.BOTTOM);
-                        mConstraintSet.applyTo(mConstraintLayout);
+                            R.id.profilePictureAvatar, ConstraintSet.BOTTOM)
+                        mConstraintSet.applyTo(mConstraintLayout)
 
                         sharedViewModel.user.value?.profile = ""
                     },

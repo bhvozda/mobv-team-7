@@ -50,6 +50,7 @@ class HomeFragment : Fragment() {
             viewModel.postsList.observe(viewLifecycleOwner, Observer {
                 val adapter = PostsAdapter(it) { post ->
                     sharedViewModel.onPostChoice(post)
+                    sharedViewModel.clearPostFlag()
                     findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
                 }
 

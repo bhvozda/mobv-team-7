@@ -93,7 +93,7 @@ class VideoPlayerFragment: Fragment() {
             } else {
                 /** GET Token for video upload  */
                 sharedViewModel.eventPostChoice.observe(viewLifecycleOwner, Observer { post ->
-                    initializePlayer(VIEW_POST_URL + post.videoUrl, null)
+                    initializePlayer(VIEW_POST_URL + post.videourl, null)
                 })
             }
         })
