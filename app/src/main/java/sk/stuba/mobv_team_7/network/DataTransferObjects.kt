@@ -1,50 +1,25 @@
 package sk.stuba.mobv_team_7.network
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import sk.stuba.mobv_team_7.database.DatabasePost
-import sk.stuba.mobv_team_7.home.PostDto
 
 @JsonClass(generateAdapter = true)
-data class NetworkPostContainer(val posts: List<PostNetwork>)
-
-/**
- * Videos represent a devbyte that can be played.
- */
-@JsonClass(generateAdapter = true)
-data class PostNetwork(
-    @SerializedName("postid")
+data class NetworkPost(
+    @Json(name = "postid")
     val postId: String,
-    @SerializedName("created")
+    @Json(name = "created")
     var createdAt: String,
-    @SerializedName("videourl")
+    @Json(name = "videourl")
     var videoUrl: String,
-    @SerializedName("username")
+    @Json(name = "username")
     var username: String,
-    @SerializedName("profile")
+    @Json(name = "profile")
     var profile: String
 )
 
-/**
- * Convert Network results to database objects
- */
-fun NetworkPostContainer.asDomainModel(): List<PostDto> {
-    return posts.map {
-        PostDto(
-            postid = it.postId,
-            created = it.createdAt,
-            videourl = it.videoUrl,
-            username = it.username,
-            profile = it.profile)
-    }
-}
-
-
-/**
- * Convert Network results to database objects
- */
-fun NetworkPostContainer.asDatabaseModel(): List<DatabasePost> {
-    return posts.map {
+fun List<NetworkPost>.asDatabaseModel(): List<DatabasePost> {
+    return map {
         DatabasePost(
             postId = it.postId,
             createdAt = it.createdAt,

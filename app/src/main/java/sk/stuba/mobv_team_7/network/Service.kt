@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.devbyteviewer.network
+package sk.stuba.mobv_team_7.network
 
 import okhttp3.RequestBody
 import retrofit2.Retrofit
@@ -23,7 +23,6 @@ import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import sk.stuba.mobv_team_7.http.URL_RETROFIT
-import sk.stuba.mobv_team_7.network.NetworkPostContainer
 
 // Since we only have one service, this can all go in one file.
 // If you add more services, split this to multiple files and make sure to share the retrofit
@@ -39,12 +38,9 @@ interface PlaylistService {
         "Cache-Control: no-cache"
     )
     @POST("service.php")
-    suspend fun getPosts(@Body body: RequestBody): NetworkPostContainer
+    suspend fun getPosts(@Body body: RequestBody): List<NetworkPost>
 }
 
-/**
- * Main entry point for network access. Call like `DevByteNetwork.devbytes.getPlaylist()`
- */
 object PostNetwork {
 
     // Configure retrofit to parse JSON and use coroutines
@@ -57,32 +53,5 @@ object PostNetwork {
 
 }
 
-//private fun getAllPosts(user: User) {
-//    val token = user.token.toString()
-//    val jsonObject = JSONObject()
-//    jsonObject.put("action", "posts")
-//    jsonObject.put("apikey", API_KEY)
-//    jsonObject.put("token", token)
-//
-//    val queue = Volley.newRequestQueue(this.context)
-//    val jsonRequest = JsonObjectRequestModified(
-//        Request.Method.POST,
-//        URL,
-//        jsonObject,
-//        Response.Listener<JSONArray> { posts ->
-//            val postsList = mutableListOf<PostDto>()
-//            for (i in 0 until posts.length()) {
-//                val jsonPost = posts.get(i)
-//                postsList.add(jsonToPostDto(jsonPost as JSONObject))
-//            }
-//            putPostsInView(postsList)
-////                binding.swipeRefreshLayout.isRefreshing = false
-//        },
-//        Response.ErrorListener {
-//            Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
-////                binding.swipeRefreshLayout.isRefreshing = false
-//        })
-//    queue.add(jsonRequest)
-//}
 
 

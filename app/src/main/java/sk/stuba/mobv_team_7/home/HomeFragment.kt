@@ -58,10 +58,19 @@ class HomeFragment : Fragment() {
 
         sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
             viewModel.refreshDataFromRepository(user)
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
-            //getAllPosts(user)
+
+            viewModel.postsList.observe(viewLifecycleOwner, Observer {
+                val adapter = PostsAdapter(it) { post ->
+                    sharedViewModel.onPostChoice(post)
+                    findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
+                }
+
+                postsRecycleView.adapter = adapter
+                postsRecycleView.layoutManager = LinearLayoutManager(this.context)
+            })
+
             binding.swipeRefreshLayout.setOnRefreshListener {
-                //getAllPosts(user)
+
             }
         })
 
@@ -78,52 +87,5 @@ class HomeFragment : Fragment() {
         findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToProfileFragment())
         return true
     }
-
-    private fun jsonToPostDto(jsonObject: JSONObject): PostDto {
-        val postId = jsonObject.get("postid").toString()
-        val createdAt = jsonObject.get("created").toString()
-        val videoUrl = jsonObject.get("videourl").toString()
-        val username = jsonObject.get("username").toString()
-        val profile = jsonObject.get("profile").toString()
-        return PostDto(postId, createdAt, videoUrl, username, profile)
-    }
-
-    private fun putPostsInView(posts: List<PostDto>) {
-        val adapter = PostsAdapter(posts) { post ->
-            sharedViewModel.onPostChoice(post)
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
-        }
-
-        postsRecycleView.adapter = adapter
-        postsRecycleView.layoutManager = LinearLayoutManager(this.context)
-    }
-
-//    private fun getAllPosts(user: User) {
-//        token = user.token.toString()
-//        val jsonObject = JSONObject()
-//        jsonObject.put("action", "posts")
-//        jsonObject.put("apikey", API_KEY)
-//        jsonObject.put("token", token)
-//
-//        val queue = Volley.newRequestQueue(this.context)
-//        val jsonRequest = JsonObjectRequestModified(
-//            Request.Method.POST,
-//            URL,
-//            jsonObject,
-//            Response.Listener<JSONArray> { posts ->
-//                val postsList = mutableListOf<PostDto>()
-//                for (i in 0 until posts.length()) {
-//                    val jsonPost = posts.get(i)
-//                    postsList.add(jsonToPostDto(jsonPost as JSONObject))
-//                }
-//                putPostsInView(postsList)
-////                binding.swipeRefreshLayout.isRefreshing = false
-//            },
-//            Response.ErrorListener {
-//                Toast.makeText(activity, "Unexpected error occurred.", Toast.LENGTH_LONG).show()
-////                binding.swipeRefreshLayout.isRefreshing = false
-//            })
-//        queue.add(jsonRequest)
-//    }
 
 }

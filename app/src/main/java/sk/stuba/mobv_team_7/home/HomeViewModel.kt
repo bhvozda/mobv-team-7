@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
-import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONException
 import org.json.JSONObject
@@ -18,19 +17,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val postsRepository = PostsRepository(getDatabase(application))
 
-    // The login finished event
-    private val _eventBoarding = MutableLiveData<Boolean>()
-    val eventBoarding: LiveData<Boolean>
-        get() = _eventBoarding
-
-    /** Methods for buttons presses **/
-    fun onBoarding() {
-        _eventBoarding.value = true
-    }
-
-    fun onBoardingComplete() {
-        _eventBoarding.value = false
-    }
+    val postsList = postsRepository.posts
 
     fun refreshDataFromRepository(user: User) {
 
