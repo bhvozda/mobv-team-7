@@ -178,6 +178,9 @@ class VideoFragment : Fragment() {
         sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
             token = user.token.toString()
         })
+        sharedViewModel.cameraId.observe(viewLifecycleOwner, Observer { camera ->
+            cameraId = camera
+        })
 
         cameraList = enumerateVideoCameras(cameraManager)
         if (cameraList.isNotEmpty()) {
@@ -190,10 +193,11 @@ class VideoFragment : Fragment() {
 
         binding.flipButton.setOnClickListener{
             cameraId = if (cameraId == "0") {
-                "1"
+                sharedViewModel.onCameraFlip("1").toString()
             } else {
-                "0"
+                sharedViewModel.onCameraFlip("0").toString()
             }
+            findNavController().navigate(VideoFragmentDirections.actionVideoFragmentRefresh())
         }
 
         binding.videoViewModel = viewModel
@@ -339,6 +343,7 @@ class VideoFragment : Fragment() {
 
             capture_button.visibility = View.GONE
             capture_off_button.visibility = View.VISIBLE
+            flip_button.visibility = View.GONE
 
             // Prevents screen rotation during the video recording
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED

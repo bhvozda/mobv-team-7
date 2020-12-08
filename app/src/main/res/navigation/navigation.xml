@@ -84,10 +84,18 @@
             app:destination="@id/homeFragment" />
         <action
             android:id="@+id/action_videoFragment_to_videoPlayerFragment"
-            app:destination="@id/videoPlayerFragment" />
+            app:destination="@id/videoPlayerFragment"
+            app:popUpTo="@id/videoFragment"
+            app:popUpToInclusive="true"
+            />
         <action
             android:id="@+id/action_videoFragment_pop_to_homeFragment"
             app:destination="@id/homeFragment"
+            app:popUpTo="@id/videoFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_videoFragmentRefresh"
+            app:destination="@id/videoFragment"
             app:popUpTo="@id/videoFragment"
             app:popUpToInclusive="true" />
     </fragment>

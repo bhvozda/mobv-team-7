@@ -17,6 +17,10 @@ class SharedViewModel(): ViewModel() {
     val user: LiveData<User>
         get() = _user
 
+    private val _cameraId = MutableLiveData<String>()
+    val cameraId: LiveData<String>
+        get() = _cameraId
+
     private val _eventRegistrationSuccessful = MutableLiveData<User>()
     val eventRegistrationSuccessful: LiveData<User>
         get() = _eventRegistrationSuccessful
@@ -66,5 +70,9 @@ class SharedViewModel(): ViewModel() {
 
     fun setForbidVideoFlag() {
         _eventForbidRecordingFlag.postValue(true)
+    }
+
+    fun onCameraFlip(cameraId: String) {
+        _cameraId.value = cameraId
     }
 }

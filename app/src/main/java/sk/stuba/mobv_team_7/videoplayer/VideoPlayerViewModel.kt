@@ -1,6 +1,7 @@
 package sk.stuba.mobv_team_7.videoplayer
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -62,6 +63,7 @@ class VideoPlayerViewModel : ViewModel() {
             "data",
             jsonObject.toString()
         )
+
 
         val api = GithubApi.retrofitService.postPost(video, data)
 
