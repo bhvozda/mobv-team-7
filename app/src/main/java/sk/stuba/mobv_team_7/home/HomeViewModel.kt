@@ -1,7 +1,11 @@
 package sk.stuba.mobv_team_7.home
 
 import android.app.Application
-import androidx.lifecycle.*
+import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -14,6 +18,10 @@ import sk.stuba.mobv_team_7.repository.PostsRepository
 import java.io.IOException
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
+
+    private var _eventPostsLoaded = MutableLiveData<Boolean>(false)
+    val eventPostsLoaded: LiveData<Boolean>
+        get() = _eventPostsLoaded
 
     private val postsRepository = PostsRepository(getDatabase(application))
 
@@ -35,12 +43,19 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 postsRepository.refreshPosts(RequestBody.create(MediaType.parse("application/json"), jsonObjectString))
+                _eventPostsLoaded.value = true
             } catch (networkError: IOException) {
-                // Show a Toast error message and hide the progress bar.
-//                if(playlist.value.isNullOrEmpty())
-//                    _eventNetworkError.value = true
+                Toast.makeText(getApplication(), "Network error (failed to reload)", Toast.LENGTH_LONG).show()
+                _eventPostsLoaded.value = true
             }
         }
+    }
+
+    /**
+     * Resets the network error flag.
+     */
+    fun onPostsLoadedComplete() {
+        _eventPostsLoaded.value = false
     }
 
 }

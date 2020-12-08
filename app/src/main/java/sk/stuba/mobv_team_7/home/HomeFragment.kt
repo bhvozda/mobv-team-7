@@ -2,30 +2,18 @@ package sk.stuba.mobv_team_7.home
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.home_fragment.*
-import org.json.JSONArray
-import org.json.JSONObject
 import sk.stuba.mobv_team_7.R
-import sk.stuba.mobv_team_7.api.PostRequest
-import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.HomeFragmentBinding
-import sk.stuba.mobv_team_7.http.API_KEY
-import sk.stuba.mobv_team_7.http.DATE_FORMAT_RESPONSE
 import sk.stuba.mobv_team_7.http.JsonObjectRequestModified
-import sk.stuba.mobv_team_7.http.URL
 import sk.stuba.mobv_team_7.posts.PostsAdapter
 import sk.stuba.mobv_team_7.shared.SharedViewModel
-import java.text.SimpleDateFormat
 
 class HomeFragment : Fragment() {
 
@@ -70,7 +58,14 @@ class HomeFragment : Fragment() {
             })
 
             binding.swipeRefreshLayout.setOnRefreshListener {
+                viewModel.refreshDataFromRepository(user)
+            }
+        })
 
+        viewModel.eventPostsLoaded.observe(viewLifecycleOwner, Observer<Boolean> { isLoaded ->
+            if (isLoaded){
+                binding.swipeRefreshLayout.isRefreshing = false
+                viewModel.onPostsLoadedComplete()
             }
         })
 
