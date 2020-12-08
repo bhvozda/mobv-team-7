@@ -51,6 +51,10 @@ class RegistrationFragment : Fragment() {
         user = User()
         binding.user = user
 
+        viewModel.eventGoToLogin.observe(viewLifecycleOwner, Observer {
+            navigateToLoginFragment()
+        })
+
         viewModel.eventRegisterFinish.observe(viewLifecycleOwner, Observer { registerFinished ->
             if (registerFinished) {
 
@@ -102,6 +106,10 @@ class RegistrationFragment : Fragment() {
     private fun registerSuccessful() {
         Toast.makeText(activity, "Registration done", Toast.LENGTH_LONG).show()
         sharedViewModel.onRegistrationSuccessful(user)
+        navigateToLoginFragment()
+    }
+
+    private fun navigateToLoginFragment() {
         findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
     }
 

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">mobv-team-7</string>
     <string name="register">Register</string>
+    <string name="register_title">Sign up to become a member</string>
     <string name="profile">Profile</string>
     <string name="record_video">Record video</string>
     <string name="show_video">Show video</string>
@@ -31,4 +32,6 @@
     <string name="welcome_back">Welcome Back,</string>
     <string name="login_to_continue">Login to continue</string>
     <string name="new_user_register">New user? Register</string>
+    <string name="already_a_member_login">Already a member? Login</string>
+    <string name="email_icon">Email Icon</string>
 </resources>

@@ -25,23 +25,22 @@
             android:id="@+id/registerHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="70dp"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/register"
-            android:textSize="25sp"
+            android:text="@string/register_title"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/editTextUsername"
+            app:layout_constraintStart_toStartOf="@+id/editTextUsername"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextUsername"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@color/colorWhite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="50dp"
             android:hint="@string/username"
             app:layout_constraintBottom_toTopOf="@+id/editTextEmail"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +58,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextEmail"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@color/colorWhite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="15dp"
@@ -80,7 +79,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextPassword"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@color/colorWhite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -102,15 +101,30 @@
 
         <Button
             android:id="@+id/next_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_alignStart="@+id/editTextPassword"
+            android:layout_alignEnd="@+id/editTextPassword"
             android:onClick="@{() -> registrationViewModel.onRegister()}"
             android:text="@string/register"
+            app:layout_constraintBottom_toTopOf="@+id/signIn"
+            app:layout_constraintEnd_toEndOf="@+id/editTextPassword"
+            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintStart_toStartOf="@+id/editTextPassword"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView
+            android:id="@+id/signIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> registrationViewModel.onOnLoginClick()}"
+            android:text="@string/already_a_member_login"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/next_button"
+            app:layout_constraintStart_toStartOf="@+id/next_button"
+            android:layout_marginBottom="50dp"
+             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
