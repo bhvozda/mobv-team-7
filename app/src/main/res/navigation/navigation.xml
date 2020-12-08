@@ -75,12 +75,16 @@
     </fragment>
     <fragment
         android:id="@+id/videoFragment"
+        android:tag="video_fragment"
         android:name="sk.stuba.mobv_team_7.video.VideoFragment"
         android:label="VideoFragment"
         tools:layout="@layout/video_fragment" >
         <action
             android:id="@+id/action_videoFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_videoFragment_to_videoPlayerFragment"
+            app:destination="@id/videoPlayerFragment" />
     </fragment>
     <fragment
         android:id="@+id/videoPlayerFragment"

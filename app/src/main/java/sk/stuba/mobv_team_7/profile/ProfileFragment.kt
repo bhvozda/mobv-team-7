@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -29,7 +28,6 @@ import kotlinx.android.synthetic.main.profile_picture_dialog.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import androidx.navigation.fragment.findNavController
 import sk.stuba.mobv_team_7.R
 import sk.stuba.mobv_team_7.api.PhotoUpdateRequest
 import sk.stuba.mobv_team_7.databinding.ProfileFragmentBinding
@@ -55,6 +53,9 @@ class ProfileFragment : Fragment() {
     private val mConstraintSet: ConstraintSet = ConstraintSet()
     private var menuList: Menu? = null
 
+    private val IMAGE_PICK_CODE = 1000
+    private val PERMISSION_CODE = 1001
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,13 +77,13 @@ class ProfileFragment : Fragment() {
 
         mConstraintLayout = binding.constraintLayout
 
-        sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
+        sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer {
             val profile = sharedViewModel.user.value?.profile
             token = sharedViewModel.user.value?.token.toString()
 
             if (!profile.isNullOrEmpty()) {
                 val uri: Uri =
-                    Uri.parse("http://api.mcomputing.eu/mobv/uploads/" + profile)
+                    Uri.parse("http://api.mcomputing.eu/mobv/uploads/$profile")
                 lifecycleScope.launch(Dispatchers.IO) {
                     binding.profilePicture.setImageURI(uri)
                     Fresco.getImagePipeline().evictFromCache(uri);
@@ -90,28 +91,6 @@ class ProfileFragment : Fragment() {
                     imagePipeline.clearMemoryCaches()
                     imagePipeline.clearDiskCaches()
                 }
-            }
-            binding.logOut.setOnClickListener {
-                val queue = Volley.newRequestQueue(this.context)
-
-                val jsonRoot = JSONObject()
-                jsonRoot.put("action", "refreshToken")
-                jsonRoot.put("apikey", API_KEY)
-                jsonRoot.put("refreshToken", user.refreshToken.toString())
-
-                val jsonRequest = JsonObjectRequest(
-                    URL, jsonRoot,
-                    Response.Listener { response ->
-                        user.refreshToken = null
-                        user.token = null
-                        user.profile = null
-                        findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
-                    },
-                    Response.ErrorListener {
-                        Toast.makeText(activity, "Refresh token not successful.", Toast.LENGTH_LONG)
-                            .show()
-                    })
-                queue.add(jsonRequest)
             }
         })
 
@@ -125,23 +104,31 @@ class ProfileFragment : Fragment() {
 
         viewModel.postStatus.observe(viewLifecycleOwner, Observer { status ->
             if (status != null) {
+
                 val item = menuList!!.findItem(R.id.saveProfile)
                 item.isVisible = false
 
                 binding.profilePicture.visibility = View.VISIBLE
                 binding.profilePictureAvatar.visibility = View.GONE
 
-                mConstraintSet.clone(mConstraintLayout);
-                mConstraintSet.connect(R.id.name, ConstraintSet.TOP,
-                    R.id.profilePicture, ConstraintSet.BOTTOM);
-                mConstraintSet.applyTo(mConstraintLayout);
+                mConstraintSet.clone(mConstraintLayout)
+                mConstraintSet.connect(binding.name.id, ConstraintSet.TOP,
+                    binding.profilePicture.id, ConstraintSet.BOTTOM)
+                mConstraintSet.applyTo(mConstraintLayout)
 
                 // Update shared view model after new image was uploaded
                 lifecycleScope.launch(Dispatchers.IO) {
-                    getUpdatedUserData()
+                    viewModel.getUpdatedUserData(token)
                 }
 
-                viewModel.onImagePostCompleted()
+                viewModel.onImagePostComplete()
+            }
+        })
+
+        viewModel.eventUserUpdated.observe(viewLifecycleOwner, Observer { userProfile ->
+            if (!userProfile.isNullOrEmpty()){
+                sharedViewModel.user.value?.profile = userProfile
+                viewModel.onGetUpdatedUserDataComplete()
             }
         })
 
@@ -158,6 +145,29 @@ class ProfileFragment : Fragment() {
         }
 
 
+        binding.logOut.setOnClickListener {
+            val queue = Volley.newRequestQueue(this.context)
+
+            val jsonRoot = JSONObject()
+            jsonRoot.put("action", "refreshToken")
+            jsonRoot.put("apikey", API_KEY)
+            jsonRoot.put("refreshToken", binding.sharedViewModel.user.value?.refreshToken)
+
+            val jsonRequest = JsonObjectRequest(
+                URL, jsonRoot,
+                Response.Listener { response ->
+                    binding.sharedViewModel.user.value?.refreshToken = null
+                    binding.sharedViewModel.user.value?.token = null
+                    binding.sharedViewModel.user.value?.profile = null
+                    findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
+                },
+                Response.ErrorListener {
+                    Toast.makeText(activity, "Refresh token not successful.", Toast.LENGTH_LONG)
+                        .show()
+                })
+            queue.add(jsonRequest)
+        }
+
         binding.changePassword.setOnClickListener {
             findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToPasswordFragment())
         }
@@ -168,40 +178,25 @@ class ProfileFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.navbar_profile_menu, menu)
-        this.menuList = menu;
+        this.menuList = menu
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.getItemId()
+        val id = item.itemId
 
         if (id == R.id.saveProfile) {
             val postRequest = PhotoUpdateRequest(API_KEY, token)
-            viewModel.postNewPost(postRequest, newProfilePicture)
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.postNewPost(postRequest, newProfilePicture)
+            }
             return true
         }
 
+        if (id == R.id.goHomeButton) {
+            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToHomeFragment())
+        }
+
         return true
-    }
-
-    private fun getUpdatedUserData() {
-        val queue = Volley.newRequestQueue(this.context)
-
-        val jsonRoot = JSONObject()
-        jsonRoot.put("action", "userProfile")
-        jsonRoot.put("apikey", API_KEY)
-        jsonRoot.put("token", token)
-
-        val jsonRequest = JsonObjectRequest(
-            URL, jsonRoot,
-            Response.Listener { response ->
-                sharedViewModel.user.value?.profile = response.get("profile").toString()
-            },
-            Response.ErrorListener {
-                // TODO: crashanlytics
-                Toast.makeText(activity, "Get user info not successful.", Toast.LENGTH_LONG)
-                    .show()
-            })
-        queue.add(jsonRequest)
     }
 
     private fun pickImageFromGallery() {
@@ -209,14 +204,6 @@ class ProfileFragment : Fragment() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, IMAGE_PICK_CODE)
-    }
-
-    companion object {
-        //image pick code
-        private val IMAGE_PICK_CODE = 1000;
-
-        //Permission code
-        private val PERMISSION_CODE = 1001;
     }
 
     //handle requested permission result
@@ -256,7 +243,7 @@ class ProfileFragment : Fragment() {
     }
 
     //Dialog with profile pic actions
-    fun showMessageBox() {
+    private fun showMessageBox() {
 
         //Inflate the dialog as custom view
         val messageBoxView =
@@ -286,52 +273,42 @@ class ProfileFragment : Fragment() {
                     PackageManager.PERMISSION_DENIED
                 ) {
                     //permission denied
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                     //show popup to request runtime permission
-                    requestPermissions(permissions, PERMISSION_CODE);
+                    requestPermissions(permissions, PERMISSION_CODE)
                 } else {
                     //permission already granted
-                    pickImageFromGallery();
+                    pickImageFromGallery()
                 }
             } else {
                 //system OS is < Marshmallow
-                pickImageFromGallery();
+                pickImageFromGallery()
             }
             messageBoxInstance.dismiss()
         }
 
         messageBoxView.buttonDelete.setOnClickListener {
-            val queue = Volley.newRequestQueue(this.context)
-
-            val jsonRoot = JSONObject()
-            jsonRoot.put("action", "clearPhoto")
-            jsonRoot.put("apikey", API_KEY)
-            jsonRoot.put("token", token)
-
-            lifecycleScope.launch(Dispatchers.IO) {
-                val jsonRequest = JsonObjectRequest(
-                    URL, jsonRoot,
-                    Response.Listener { _ ->
-                        messageBoxInstance.dismiss()
-
-                        binding.profilePicture.visibility = View.GONE
-                        binding.profilePictureAvatar.visibility = View.VISIBLE
-
-                        mConstraintSet.clone(mConstraintLayout);
-                        mConstraintSet.connect(R.id.name, ConstraintSet.TOP,
-                            R.id.profilePictureAvatar, ConstraintSet.BOTTOM);
-                        mConstraintSet.applyTo(mConstraintLayout);
-
-                        sharedViewModel.user.value?.profile = ""
-                    },
-                    Response.ErrorListener {
-                        // TODO: crashanlytics
-                        Toast.makeText(activity, "Delete pic not succesful.", Toast.LENGTH_LONG)
-                            .show()
-                    })
-                queue.add(jsonRequest)
-            }
+            viewModel.deleteUserPicture(token)
         }
-    }
 
+        viewModel.eventUserPictureDeleted.observe(viewLifecycleOwner, Observer { isDeleted ->
+            if (isDeleted){
+                messageBoxInstance.dismiss()
+
+                binding.profilePicture.visibility = View.GONE
+                binding.profilePictureAvatar.visibility = View.VISIBLE
+
+                mConstraintSet.clone(mConstraintLayout)
+                mConstraintSet.connect(
+                    binding.name.id, ConstraintSet.TOP,
+                    binding.profilePictureAvatar.id, ConstraintSet.BOTTOM
+                )
+                mConstraintSet.applyTo(mConstraintLayout)
+
+                sharedViewModel.user.value?.profile = ""
+
+                viewModel.onDeleteUserPictureComplete()
+            }
+        })
+    }
 }

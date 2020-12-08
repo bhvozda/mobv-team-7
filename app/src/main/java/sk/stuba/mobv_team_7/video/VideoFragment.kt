@@ -1,26 +1,19 @@
 package sk.stuba.mobv_team_7.video
 
 import android.annotation.SuppressLint
-import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.hardware.camera2.*
 import android.media.MediaCodec
 import android.media.MediaRecorder
 import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import android.provider.MediaStore
 import android.util.Log
 import android.util.Range
 import android.view.*
-import android.webkit.MimeTypeMap
-import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -29,21 +22,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.video_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.json.JSONObject
-import sk.stuba.mobv_team_7.BuildConfig
 import sk.stuba.mobv_team_7.R
-import sk.stuba.mobv_team_7.api.PostRequest
-import sk.stuba.mobv_team_7.data.User
 import sk.stuba.mobv_team_7.databinding.VideoFragmentBinding
-import sk.stuba.mobv_team_7.http.API_KEY
 import sk.stuba.mobv_team_7.shared.SharedViewModel
 import sk.stuba.mobv_team_7.utils.AutoFitSurfaceView
 import sk.stuba.mobv_team_7.utils.OrientationLiveData
@@ -61,7 +47,7 @@ class VideoFragment : Fragment() {
      * id: 0 - back camera
      * id: 1 - front camera
      * */
-    private val cameraId : String = "0"
+    private var cameraId : String = "0"
     private val width = 1920
     private val height = 1080
     private val fps = 30
@@ -193,6 +179,15 @@ class VideoFragment : Fragment() {
             token = user.token.toString()
         })
 
+        binding.flipButton.setOnClickListener{
+            cameraId = if (cameraId == "0") {
+                "1"
+            } else {
+                "0"
+            }
+
+        }
+
         binding.videoViewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -205,6 +200,7 @@ class VideoFragment : Fragment() {
 
         overlay = view.findViewById(R.id.overlay)
         viewFinder = view.findViewById(R.id.view_finder)
+
 
         viewFinder.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceDestroyed(holder: SurfaceHolder) = Unit
@@ -235,6 +231,24 @@ class VideoFragment : Fragment() {
             })
         }
     }
+
+//    // Go fullscreen
+//    @Override
+//    override fun onResume()
+//    {
+//        super.onResume()
+//        (context as AppCompatActivity).supportActionBar?.hide()
+//        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+//    }
+//
+//    // Show toolbar again
+//    @Override
+//    override fun onPause()
+//    {
+//        super.onPause()
+//        (context as AppCompatActivity).supportActionBar?.show()
+//        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+//    }
 
     /** Creates a [MediaRecorder] instance using the provided [Surface] as input */
     private fun createRecorder(surface: Surface) = MediaRecorder().apply {
@@ -335,18 +349,21 @@ class VideoFragment : Fragment() {
 //                                Intent.FLAG_ACTIVITY_CLEAR_TOP
 //                    })
 
-                    val postRequest = PostRequest(API_KEY, token)
-
-                    viewModel.postNewPost(postRequest, outputFile)
-                    Log.d("TAG_TAG", "file saving")
-
-                    // Finishes our current camera screen
-                    delay(VideoFragment.ANIMATION_SLOW_MILLIS)
+                    sendVideoOnReview(outputFile)
+//
+//                    // Finishes our current camera screen
+//                    delay(VideoFragment.ANIMATION_SLOW_MILLIS)
                 }
             }
 
             true
         }
+    }
+
+    // Go to preview fragment and see video
+    private fun sendVideoOnReview(post: File) {
+        sharedViewModel.onPostUpload(post, true)
+        findNavController().navigate(VideoFragmentDirections.actionVideoFragmentToVideoPlayerFragment())
     }
 
     /** Opens the camera and returns the opened device (as the result of the suspend coroutine) */
@@ -422,13 +439,6 @@ class VideoFragment : Fragment() {
 
     companion object {
         private val TAG = VideoFragment::class.java.simpleName
-
-        /** Combination of all flags required to put activity into immersive mode */
-        const val FLAGS_FULLSCREEN =
-            View.SYSTEM_UI_FLAG_LOW_PROFILE or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
         /** Milliseconds used for UI animations */
         const val ANIMATION_FAST_MILLIS = 200L
