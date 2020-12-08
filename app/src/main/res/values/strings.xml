@@ -28,4 +28,7 @@
     <string name="video_record">Record</string>
     <string name="show_posts">Show Posts</string>
     <string name="save">SAVE</string>
+    <string name="welcome_back">Welcome Back,</string>
+    <string name="login_to_continue">Login to continue</string>
+    <string name="new_user_register">New user? Register</string>
 </resources>
