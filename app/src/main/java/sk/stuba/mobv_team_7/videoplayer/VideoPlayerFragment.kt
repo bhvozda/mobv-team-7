@@ -85,13 +85,14 @@ class VideoPlayerFragment: Fragment() {
                 sharedViewModel.eventLoginSuccessful.observe(viewLifecycleOwner, Observer { user ->
                     token = user.token.toString()
                 })
+                binding.videoPlayerButton.visibility = View.VISIBLE
                 /** SHOW Captured video preview */
                 sharedViewModel.eventPostUpload.observe(viewLifecycleOwner, Observer { post ->
                     outputFile = post
                     initializePlayer(null, Uri.fromFile(post))
                 })
             } else {
-                /** GET Token for video upload  */
+                /** SHOW Video from internet  */
                 sharedViewModel.eventPostChoice.observe(viewLifecycleOwner, Observer { post ->
                     initializePlayer(VIEW_POST_URL + post.videourl, null)
                 })

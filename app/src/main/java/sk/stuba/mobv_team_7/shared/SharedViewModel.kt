@@ -33,6 +33,10 @@ class SharedViewModel(): ViewModel() {
     val eventUploadFlag: LiveData<Boolean>
         get() = _eventUploadFlag
 
+    private val _eventForbidRecordingFlag = MutableLiveData<Boolean>()
+    val eventForbidRecordingFlag: LiveData<Boolean>
+        get() = _eventForbidRecordingFlag
+
     fun onLoginSuccessful(user: User) {
         _user.value = user
         _eventLoginSuccessful.value = user
@@ -53,5 +57,9 @@ class SharedViewModel(): ViewModel() {
 
     fun clearPostFlag() {
         _eventUploadFlag.postValue(false)
+    }
+
+    fun setForbidVideoFlag() {
+        _eventForbidRecordingFlag.postValue(true)
     }
 }

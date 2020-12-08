@@ -13,7 +13,9 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import android.util.Range
+import android.util.Size
 import android.view.*
+import android.widget.Toast
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -37,9 +39,11 @@ import sk.stuba.mobv_team_7.utils.getPreviewOutputSize
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.log
 
 class VideoFragment : Fragment() {
 
@@ -48,8 +52,8 @@ class VideoFragment : Fragment() {
      * id: 1 - front camera
      * */
     private var cameraId : String = "0"
-    private val width = 1920
-    private val height = 1080
+    private var width = 1920
+    private var height = 1080
     private val fps = 30
 
     private lateinit var viewModel: VideoViewModel
@@ -58,11 +62,7 @@ class VideoFragment : Fragment() {
     private lateinit var binding: VideoFragmentBinding
 
     private lateinit var token: String
-
-    /** Host's navigation controller */
-    private val navController: NavController by lazy {
-        Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-    }
+    private lateinit var cameraList: List<CameraInfo>
 
     /** Detects, characterizes, and connects to a CameraDevice (used for all camera operations) */
     private val cameraManager: CameraManager by lazy {
@@ -179,13 +179,21 @@ class VideoFragment : Fragment() {
             token = user.token.toString()
         })
 
+        cameraList = enumerateVideoCameras(cameraManager)
+        if (cameraList.isNotEmpty()) {
+            cameraId = cameraList[0].cameraId
+        } else {
+            Toast.makeText(context, "We are sorry, but your phone does not support fullHD recording", Toast.LENGTH_SHORT).show()
+            sharedViewModel.setForbidVideoFlag()
+            findNavController().navigate(VideoFragmentDirections.actionVideoFragmentPopToHomeFragment())
+        }
+
         binding.flipButton.setOnClickListener{
             cameraId = if (cameraId == "0") {
                 "1"
             } else {
                 "0"
             }
-
         }
 
         binding.videoViewModel = viewModel
@@ -200,7 +208,6 @@ class VideoFragment : Fragment() {
 
         overlay = view.findViewById(R.id.overlay)
         viewFinder = view.findViewById(R.id.view_finder)
-
 
         viewFinder.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceDestroyed(holder: SurfaceHolder) = Unit
@@ -230,25 +237,62 @@ class VideoFragment : Fragment() {
                     orientation -> Log.d(TAG, "Orientation changed: $orientation")
             })
         }
+
+        if (cameraList.size > 1) {
+            binding.flipButton.visibility = View.VISIBLE
+        }
+
+        val cameraManager =
+            requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
     }
 
-//    // Go fullscreen
-//    @Override
-//    override fun onResume()
-//    {
-//        super.onResume()
-//        (context as AppCompatActivity).supportActionBar?.hide()
-//        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//    }
-//
-//    // Show toolbar again
-//    @Override
-//    override fun onPause()
-//    {
-//        super.onPause()
-//        (context as AppCompatActivity).supportActionBar?.show()
-//        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//    }
+    /** Lists all video-capable cameras and supported resolution and FPS combinations */
+    @SuppressLint("InlinedApi")
+    private fun enumerateVideoCameras(cameraManager: CameraManager): List<CameraInfo> {
+        val availableCameras: MutableList<CameraInfo> = mutableListOf()
+
+        // Iterate over the list of cameras and add those with high speed video recording
+        //  capability to our output. This function only returns those cameras that declare
+        //  constrained high speed video recording, but some cameras may be capable of doing
+        //  unconstrained video recording with high enough FPS for some use cases and they will
+        //  not necessarily declare constrained high speed video capability.
+        cameraManager.cameraIdList.forEach { id ->
+            val characteristics = cameraManager.getCameraCharacteristics(id)
+            val orientation = lensOrientationString(
+                characteristics.get(CameraCharacteristics.LENS_FACING)!!)
+
+            // Query the available capabilities and output formats
+            val capabilities = characteristics.get(
+                CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)!!
+            val cameraConfig = characteristics.get(
+                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+
+            // Return cameras that declare to be backward compatible
+            if (capabilities.contains(CameraCharacteristics
+                    .REQUEST_AVAILABLE_CAPABILITIES_BACKWARD_COMPATIBLE)) {
+                // Recording should always be done in the most efficient format, which is
+                //  the format native to the camera framework
+                val targetClass = MediaRecorder::class.java
+
+                // For each size, list the expected FPS
+                cameraConfig.getOutputSizes(targetClass).forEach { size ->
+                    // Get the number of seconds that each frame will take to process
+                    if (1920 == size.width && 1080 == size.height) {
+                        val secondsPerFrame =
+                            cameraConfig.getOutputMinFrameDuration(targetClass, size) /
+                                    1_000_000_000.0
+                        // Compute the frames per second to let user select a configuration
+                        val fps = if (secondsPerFrame > 0) (1.0 / secondsPerFrame).toInt() else 0
+                        val fpsLabel = if (fps > 0) "$fps" else "N/A"
+                        availableCameras.add(CameraInfo(
+                            "$orientation ($id) $size $fpsLabel FPS", id, size, fps))
+                    }
+                }
+            }
+        }
+
+        return availableCameras
+    }
 
     /** Creates a [MediaRecorder] instance using the provided [Surface] as input */
     private fun createRecorder(surface: Surface) = MediaRecorder().apply {
@@ -258,6 +302,7 @@ class VideoFragment : Fragment() {
         setOutputFile(outputFile.absolutePath)
         setVideoEncodingBitRate(RECORDER_VIDEO_BITRATE)
         setVideoFrameRate(fps)
+        Log.d(TAG, "Selected preview size: $characteristics")
         setVideoSize(width, height)
         // 8MB - 1024 * 1024 * 8
         setMaxFileSize(8388608L)
@@ -288,75 +333,50 @@ class VideoFragment : Fragment() {
         //  session.stopRepeating() is called
         session.setRepeatingRequest(previewRequest, null, cameraHandler)
 
-        // React to user touching the capture button
-        capture_button.setOnTouchListener { view, event ->
-            when (event.action) {
 
-                MotionEvent.ACTION_DOWN -> lifecycleScope.launch(Dispatchers.IO) {
+        /** Start recording event */
+        capture_button.setOnClickListener {
 
-                    // Prevents screen rotation during the video recording
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_LOCKED
+            capture_button.visibility = View.GONE
+            capture_off_button.visibility = View.VISIBLE
 
-                    // Start recording repeating requests, which will stop the ongoing preview
-                    //  repeating requests without having to explicitly call `session.stopRepeating`
-                    session.setRepeatingRequest(recordRequest, null, cameraHandler)
-
-                    // Finalizes recorder setup and starts recording
-                    recorder.apply {
-                        // Sets output orientation based on current sensor value at start time
-                        relativeOrientation.value?.let { setOrientationHint(it) }
-                        prepare()
-                        start()
-                    }
-                    recordingStartMillis = System.currentTimeMillis()
-                    Log.d(TAG, "Recording started")
-
-                    // Starts recording animation
-                    overlay.post(animationTask)
-                }
-
-                MotionEvent.ACTION_UP -> lifecycleScope.launch(Dispatchers.IO) {
-
-                    // Unlocks screen rotation after recording finished
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-
-                    // Requires recording of at least MIN_REQUIRED_RECORDING_TIME_MILLIS
-                    val elapsedTimeMillis = System.currentTimeMillis() - recordingStartMillis
-                    if (elapsedTimeMillis < MIN_REQUIRED_RECORDING_TIME_MILLIS) {
-                        delay(MIN_REQUIRED_RECORDING_TIME_MILLIS - elapsedTimeMillis)
-                    }
-
-                    Log.d(TAG, "Recording stopped. Output file: $outputFile")
-                    recorder.stop()
-
-                    // Removes recording animation
-                    overlay.removeCallbacks(animationTask)
-
-                    // Broadcasts the media file to the rest of the system
-                    MediaScannerConnection.scanFile(
-                        view.context, arrayOf(outputFile.absolutePath), null, null)
-
-                    // Launch external activity via intent to play video recorded using our provider
-//                    startActivity(Intent().apply {
-//                        action = Intent.ACTION_VIEW
-//                        type = MimeTypeMap.getSingleton()
-//                            .getMimeTypeFromExtension(outputFile.extension)
-//                        val authority = "${BuildConfig.APPLICATION_ID}.provider"
-//                        data = FileProvider.getUriForFile(view.context, authority, outputFile)
-//                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-//                                Intent.FLAG_ACTIVITY_CLEAR_TOP
-//                    })
-
-                    sendVideoOnReview(outputFile)
-//
-//                    // Finishes our current camera screen
-//                    delay(VideoFragment.ANIMATION_SLOW_MILLIS)
-                }
+            // Prevents screen rotation during the video recording
+            requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
+            // Start recording repeating requests, which will stop the ongoing preview
+            //  repeating requests without having to explicitly call `session.stopRepeating`
+            session.setRepeatingRequest(recordRequest, null, cameraHandler)
+            // Finalizes recorder setup and starts recording
+            recorder.apply {
+                // Sets output orientation based on current sensor value at start time
+                relativeOrientation.value?.let { setOrientationHint(it) }
+                prepare()
+                start()
             }
+            recordingStartMillis = System.currentTimeMillis()
+            Log.d(TAG, "Recording started")
+            // Starts recording animation
+            overlay.post(animationTask)
+        }
 
-            true
+        /** Finish recording event */
+        capture_off_button.setOnClickListener {
+
+            capture_button.visibility = View.VISIBLE
+            capture_off_button.visibility = View.GONE
+
+            // Unlocks screen rotation after recording finished
+            requireActivity().requestedOrientation =
+                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
+            Log.d(TAG, "Recording stopped. Output file: $outputFile")
+            recorder.stop()
+
+            // Removes recording animation
+            overlay.removeCallbacks(animationTask)
+            // Broadcasts the media file to the rest of the system
+            MediaScannerConnection.scanFile(view?.context, arrayOf(outputFile.absolutePath), null, null)
+
+            sendVideoOnReview(outputFile)
         }
     }
 
@@ -438,6 +458,21 @@ class VideoFragment : Fragment() {
     }
 
     companion object {
+
+        private data class CameraInfo(
+            val name: String,
+            val cameraId: String,
+            val size: Size,
+            val fps: Int)
+
+        /** Converts a lens orientation enum into a human-readable string */
+        private fun lensOrientationString(value: Int) = when (value) {
+            CameraCharacteristics.LENS_FACING_BACK -> "Back"
+            CameraCharacteristics.LENS_FACING_FRONT -> "Front"
+            CameraCharacteristics.LENS_FACING_EXTERNAL -> "External"
+            else -> "Unknown"
+        }
+
         private val TAG = VideoFragment::class.java.simpleName
 
         /** Milliseconds used for UI animations */

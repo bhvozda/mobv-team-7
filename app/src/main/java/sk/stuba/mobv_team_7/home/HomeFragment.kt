@@ -63,6 +63,11 @@ class HomeFragment : Fragment() {
             binding.swipeRefreshLayout.setOnRefreshListener {
                 viewModel.refreshDataFromRepository(user)
             }
+
+        })
+
+        sharedViewModel.eventForbidRecordingFlag.observe(viewLifecycleOwner, Observer { flag ->
+            if (flag) binding.videoButton.visibility = View.GONE
         })
 
         viewModel.eventPostsLoaded.observe(viewLifecycleOwner, Observer<Boolean> { isLoaded ->
