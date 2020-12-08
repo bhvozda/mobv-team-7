@@ -12,8 +12,15 @@ class FormattingUtils {
 
     companion object {
         fun _fancyDateFormatting(fromDate: String): String {
-            val fromDateTime = LocalDateTime.parse(fromDate, formatter)
-            val now = LocalDateTime.now()
+            var fromDateTime = LocalDateTime.parse(fromDate, formatter)
+            var now = LocalDateTime.now()
+
+            // fix negative units bug
+            if (fromDateTime.isBefore(now)) {
+                var tmp = fromDateTime
+                fromDateTime = now
+                now = tmp
+            }
 
             val months = fromDateTime.until(now, ChronoUnit.MONTHS)
             if (months >= 12.toLong()) {
