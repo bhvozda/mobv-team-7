@@ -132,9 +132,9 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        //task-10
-        binding.profilePicture.getHierarchy().setPlaceholderImage(R.drawable.default_avatar)
-        binding.profilePictureAvatar.getHierarchy().setPlaceholderImage(R.drawable.default_avatar)
+        val path = "res:/" + R.drawable.default_avatar;
+        binding.profilePicture.setImageURI(path)
+        binding.profilePictureAvatar.setImageURI(path)
 
         binding.profilePicture.setOnClickListener {
             showMessageBox()
@@ -287,11 +287,11 @@ class ProfileFragment : Fragment() {
 
         messageBoxView.buttonDelete.setOnClickListener {
             viewModel.deleteUserPicture(token)
+            messageBoxInstance.dismiss()
         }
 
         viewModel.eventUserPictureDeleted.observe(viewLifecycleOwner, Observer { isDeleted ->
             if (isDeleted){
-                messageBoxInstance.dismiss()
 
                 binding.profilePicture.visibility = View.GONE
                 binding.profilePictureAvatar.visibility = View.VISIBLE
