@@ -1,6 +1,7 @@
 package sk.stuba.mobv_team_7.videoplayer
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -63,6 +64,7 @@ class VideoPlayerViewModel : ViewModel() {
             jsonObject.toString()
         )
 
+
         val api = GithubApi.retrofitService.postPost(video, data)
 
         api.enqueue(object : Callback<PostResponse> {
@@ -71,6 +73,7 @@ class VideoPlayerViewModel : ViewModel() {
             }
 
             override fun onResponse(call: Call<PostResponse>, response: Response<PostResponse>) {
+                Log.d("TAG_TAG", "Video uploaded succesfully")
                 _postStatus.value = response.body()
             }
         })

@@ -30,15 +30,48 @@
             android:layout_height="match_parent"
             android:foreground="@android:color/transparent" />
 
-        <Button
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/flip_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:backgroundTint="#ffffff"
+            app:tint="#FF5722"
+            android:visibility="gone"
+            android:contentDescription="@string/video_button"
+            android:src="@drawable/ic_flip_camera"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/capture_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            android:text="Record"
+            android:backgroundTint="#ffffff"
+            app:tint="#FF5722"
+            android:visibility="visible"
+            android:contentDescription="@string/video_button"
+            android:src="@drawable/ic_record_off"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/capture_off_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="#FF5722"
+            app:tint="#ffffff"
+            android:visibility="gone"
+            android:contentDescription="@string/video_button"
+            android:src="@drawable/ic_record_off"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <VideoView
             android:id="@+id/videoView"

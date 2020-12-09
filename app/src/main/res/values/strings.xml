@@ -25,4 +25,7 @@
     <string name="edit_profile_picture">Edit Profile Picture</string>
     <string name="upload_from_gallery">Upload from gallery</string>
     <string name="delete">Delete</string>
+    <string name="video_record">Record</string>
+    <string name="show_posts">Show Posts</string>
+    <string name="save">SAVE</string>
 </resources>

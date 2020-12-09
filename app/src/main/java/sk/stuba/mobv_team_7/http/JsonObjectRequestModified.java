@@ -47,7 +47,7 @@ public class JsonObjectRequestModified extends JsonRequest<JSONArray> {
             Response.Listener<JSONArray> listener,
             @Nullable Response.ErrorListener errorListener) {
         this(
-                jsonRequest == null ? Method.GET : Method.POST,
+                jsonRequest == null ? Request.Method.GET : Request.Method.POST,
                 url,
                 jsonRequest,
                 listener,

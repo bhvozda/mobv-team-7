@@ -40,6 +40,8 @@ class HomeFragment : Fragment() {
         binding.homeViewModel = viewModel
         binding.lifecycleOwner = this
 
+        setHasOptionsMenu(true)
+
         binding.videoButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoFragment())
         }
@@ -50,6 +52,7 @@ class HomeFragment : Fragment() {
             viewModel.postsList.observe(viewLifecycleOwner, Observer {
                 val adapter = PostsAdapter(it) { post ->
                     sharedViewModel.onPostChoice(post)
+                    sharedViewModel.clearPostFlag()
                     findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToVideoPlayerFragment())
                 }
 
@@ -60,6 +63,11 @@ class HomeFragment : Fragment() {
             binding.swipeRefreshLayout.setOnRefreshListener {
                 viewModel.refreshDataFromRepository(user)
             }
+
+        })
+
+        sharedViewModel.eventForbidRecordingFlag.observe(viewLifecycleOwner, Observer { flag ->
+            if (flag) binding.videoButton.visibility = View.GONE
         })
 
         viewModel.eventPostsLoaded.observe(viewLifecycleOwner, Observer<Boolean> { isLoaded ->
@@ -69,7 +77,6 @@ class HomeFragment : Fragment() {
             }
         })
 
-        setHasOptionsMenu(true)
         return binding.root
     }
 
