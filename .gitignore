@@ -12,3 +12,9 @@
 /captures
 .externalNativeBuild
 .cxx
+/.idea
+local.properties
+*.apk
+*.abb
+/app/debug
+/app/release
