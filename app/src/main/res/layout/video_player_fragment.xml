@@ -39,12 +39,12 @@
                 android:layout_gravity="end|bottom"
                 android:layout_marginEnd="32dp"
                 android:layout_marginBottom="32dp"
-                android:visibility="gone"
-                android:backgroundTint="#FF5722"
-                app:tint="#ffffff"
+                android:visibility="visible"
+                android:backgroundTint="#ffffff"
+                app:tint="#6200EE"
                 android:onClick="@{() -> videoPlayerViewModel.onPostOpen()}"
                 android:contentDescription="@string/video_button"
-                android:src="@drawable/ic_baseline_add_24"
+                android:src="@drawable/ic_baseline_cloud_upload_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </com.google.android.exoplayer2.ui.PlayerView>
